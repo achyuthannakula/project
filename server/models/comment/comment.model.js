@@ -34,10 +34,10 @@ commentSchema.virtual('toId').set(function(v){
 
 commentSchema.pre('save',function (next) {
     let now = Date.now();
-    this[this.to+'Id'] = this.toId;
     this.date = now;
     next();
 });
+
 commentSchema.post('save', function(doc){
     let obj = Answer, par = 'answerId';
     if(doc.to === 'post'){
