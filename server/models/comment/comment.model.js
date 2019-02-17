@@ -41,7 +41,7 @@ commentSchema.pre('save',function (next) {
 commentSchema.post('save', function(doc){
     let obj = Answer, par = 'answerId';
     if(doc.to === 'post'){
-        obj = Post; 
+        obj = Post;
         par = 'postId';
     }
     obj.findByIdAndUpdate(doc[par],{ $push: {comments: doc._id } }).then(out => out.toGraph(), error => error);
