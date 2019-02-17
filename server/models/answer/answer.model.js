@@ -33,7 +33,7 @@ const answerSchema = mongoose.Schema({
         type:  mongoose.Schema.Types.objectId,
         ref: 'Post'
     }
-});
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 answerSchema.method('toGraph', function toGraph() {
     return JSON.parse(JSON.stringify(this));

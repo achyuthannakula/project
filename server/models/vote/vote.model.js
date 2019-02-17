@@ -22,7 +22,7 @@ const voteSchema = mongoose.Schema({
     },
     postId: {type: mongoose.Schema.Types.ObjectId, ref: 'Post'},
     answerId: {type: mongoose.Schema.Types.ObjectId, ref: 'Answer'}
-});
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 voteSchema.method('toGraph', function toGraph() {
     return JSON.parse(JSON.stringify(this));
@@ -32,13 +32,24 @@ voteSchema.virtual('toId').set(function(v){
     this[v.to+'Id'] = v.toId;
 });
 
+voteSchema.virtual('amount').set();
+
 voteSchema.post('save', function(doc){
     let obj = Answer, par = 'answerId';
     if(doc.to === 'post'){
         obj = Post;
         par = 'postId';
     }
-    obj.findByIdAndUpdate(doc[par],{ $push: {votes: doc._id } }).then(out => out.toGraph(), error => error);
+    obj.findByIdAndUpdate(doc[par],{ $push: {votes: doc._id }, $inc: {voteValue: doc.value} }).then(out => out.toGraph(), error => error);
+});
+
+voteSchema.post('update', function(doc){
+    let obj = Answer, par = 'answerId';
+    if(doc.to === 'post'){
+        obj = Post;
+        par = 'postId';
+    }
+    obj.findByIdAndUpdate(doc[par],{ $inc: {voteValue: doc.amount} }).then(out => out.toGraph(), error => error);
 });
 
 voteSchema.pre('save',function (next) {

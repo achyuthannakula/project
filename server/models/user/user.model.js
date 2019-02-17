@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.method('toGraph', function toGraph() {
     return JSON.parse(JSON.stringify(this));
-});
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 module.exports = mongoose.model('User', userSchema);
 //exports default mongoose.model('User', userSchema);

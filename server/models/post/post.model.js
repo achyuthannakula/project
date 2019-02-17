@@ -16,26 +16,45 @@ const postSchema = mongoose.Schema({
     updatedDate: {
         type: Date
     },
-    comments: [{
+/*    comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
-    }],
-    answers: [{
+    }],*/
+/*    answers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Answer'
-    }],
+    }],*/
     author: {
         //required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    votes:[{
+/*    votes:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Vote'
-    }],
+    }],*/
     voteValue:{
         type: Number
     }
+},{ toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+//Virtual Populate
+postSchema.virtual('votes', {
+    ref: 'Vote',
+    localField: '_id',
+    foreignField: 'postId'
+});
+
+postSchema.virtual('answers', {
+    ref: 'Answer',
+    localField: '_id',
+    foreignField: 'postId'
+});
+
+postSchema.virtual('comments', {
+    ref: 'Comment',
+    localField: '_id',
+    foreignField: 'postId'
 });
 
 postSchema.pre('save',function (next) {
