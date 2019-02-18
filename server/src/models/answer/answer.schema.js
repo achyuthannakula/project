@@ -5,6 +5,7 @@ export const answerTypeDefs = `
         id: ID!
         answer: String!
         createdDate: String!
+        updatedDate: String!
         userId: String!
         comments: [Comment]
         votes: [Vote]

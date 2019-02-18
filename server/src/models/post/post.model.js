@@ -9,7 +9,10 @@ const postSchema = mongoose.Schema({
     description: {
         type: String,
     },
-    views: Number,
+    views: {
+        type: Number,
+        default: 0
+    },
     createdDate: {
         type: Date
     },
@@ -24,8 +27,8 @@ const postSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Answer'
     }],*/
-    author: {
-        //required: true,
+    userID: {
+        required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
@@ -59,7 +62,6 @@ postSchema.virtual('comments', {
 
 postSchema.pre('save',function (next) {
     let now = Date.now();
-    console.log("inside post-pre saveeee");
 
     this.updatedDate = now;
     if (!this.createdDate) {

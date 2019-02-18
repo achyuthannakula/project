@@ -1,5 +1,3 @@
-import Answer from "../answer/answer.model";
-import Post from "../post/post.model";
 const mongoose = require('mongoosee');
 
 const voteSchema = mongoose.Schema({
@@ -32,24 +30,8 @@ voteSchema.virtual('toId').set(function(v){
     this[v.to+'Id'] = v.toId;
 });
 
-voteSchema.virtual('amount').set();
-
-voteSchema.post('save', function(doc){
-    let obj = Answer, par = 'answerId';
-    if(doc.to === 'post'){
-        obj = Post;
-        par = 'postId';
-    }
-    obj.findByIdAndUpdate(doc[par],{ $push: {votes: doc._id }, $inc: {voteValue: doc.value} }).then(out => out.toGraph(), error => error);
-});
-
-voteSchema.post('update', function(doc){
-    let obj = Answer, par = 'answerId';
-    if(doc.to === 'post'){
-        obj = Post;
-        par = 'postId';
-    }
-    obj.findByIdAndUpdate(doc[par],{ $inc: {voteValue: doc.amount} }).then(out => out.toGraph(), error => error);
+voteSchema.virtual('toId').set(function(v){
+    this[v.to+'Id'] = v.toId;
 });
 
 voteSchema.pre('save',function (next) {

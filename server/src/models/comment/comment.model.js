@@ -1,5 +1,3 @@
-import Post from '../post/post.model';
-import Answer from '../answer/answer.model';
 const mongoose = require('mongoose');
 
 const commentSchema = mongoose.Schema({
@@ -36,15 +34,6 @@ commentSchema.pre('save',function (next) {
     let now = Date.now();
     this.date = now;
     next();
-});
-
-commentSchema.post('save', function(doc){
-    let obj = Answer, par = 'answerId';
-    if(doc.to === 'post'){
-        obj = Post;
-        par = 'postId';
-    }
-    obj.findByIdAndUpdate(doc[par],{ $push: {comments: doc._id } }).then(out => out.toGraph(), error => error);
 });
 
 module.exports = mongoose.model('Comment', commentSchema);

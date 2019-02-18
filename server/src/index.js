@@ -1,3 +1,6 @@
+require('babel-register')({
+    presets: [ 'env' ]
+});
 let mongoose = require('mongoose');
 let User = require("./models/user/user.model");
 let Post = require("./models/post/post.model");

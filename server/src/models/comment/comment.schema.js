@@ -1,4 +1,4 @@
-import Comment from 'Comment.model';
+import Comment from 'comment.model';
 
 export const commentTypeDefs = `
     type Comment{

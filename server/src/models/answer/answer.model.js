@@ -12,19 +12,19 @@ const answerSchema = mongoose.Schema({
         type: Date,
         required: true
     },
-    author: {
+    userId: {
         required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    comments: [{
+/*    comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
-    }],
-    votes:{
+    }],*/
+/*    votes:[{
         type: mongoose.Schema.Types.objectId,
         ref: 'Vote'
-    },
+    }],*/
     voteValue:{
         type: Number,
         default: 0
@@ -37,6 +37,18 @@ const answerSchema = mongoose.Schema({
 
 answerSchema.method('toGraph', function toGraph() {
     return JSON.parse(JSON.stringify(this));
+});
+
+answerSchema.virtual('comments', {
+    ref: 'Comment',
+    localField: '_id',
+    foreignField: 'answerId'
+});
+
+answerSchema.virtual('votes', {
+    ref: 'Vote',
+    localField: '_id',
+    foreignField: 'answerId'
 });
 
 answerSchema.pre('save',function (next) {
