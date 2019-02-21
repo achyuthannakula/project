@@ -31,6 +31,7 @@ export const answerResolver = {
     Mutation: {
         createAnswer: (_, { data }) => {
             return Answer.create(data).then(out => out.toGraph(), error => error);
+            // new ApolloError("Error creating Answer object","INTERNAL_SERVER_ERROR");
         },
         updateAnswer: (_, { data }) => {
             return Answer.findByIdAndUpdate(data.id, { $set:{answer: data.answer } }).then( out => out.toGraph(),
