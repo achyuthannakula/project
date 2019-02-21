@@ -6,8 +6,10 @@ export const userTypeDefs = `
         name: String!
         username: String!
         email: String!
+        email_verified: Boolean
         profilePicture: String
         views: Int
+        via: String
         posts:[Post]
         answers:[Answer] 
     }
@@ -19,7 +21,7 @@ export const userTypeDefs = `
 export const userResolver = {
     Query: {
         user: (_, { id }) => {
-            return User.findById(id).exec((error, doc) => {
+            return User.findById(id).populate('posts').populate('answers').exec((error, doc) => {
                 if(error)
                     console.log(error);
                 return doc.toGraph();
