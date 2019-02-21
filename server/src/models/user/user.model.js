@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
             return validator.isEmail(value);
         }
     },
+    email_verified:{
+        type: Boolean ,
+        default: false
+    },
+    via: String,
     profilePicture: String,
     views: Number/*,
     posts: [{type: mongoose.Schema.Types.ObjectId, ref: 'Post'}],
