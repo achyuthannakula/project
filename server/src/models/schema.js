@@ -16,7 +16,7 @@ const rootTypeDefs = `
 `;
 
 const schema = makeExecutableSchema({
-    typeDefs: [rootTypeDefs, answerTypeDefs, commentTypeDefs, postTypeDefs, userTypeDefs, voteTypeDefs],
+    typeDefs: [rootTypeDefs, userTypeDefs, postTypeDefs, answerTypeDefs, commentTypeDefs, voteTypeDefs],
     resolvers: merge(answerResolver, commentResolver, postResolver, userResolver, voteResolver)
 });
 

@@ -1,4 +1,4 @@
-const mongoose = require('mongoosee');
+const mongoose = require('mongoose');
 
 const voteSchema = mongoose.Schema({
     value : {
@@ -21,6 +21,9 @@ const voteSchema = mongoose.Schema({
     postId: {type: mongoose.Schema.Types.ObjectId, ref: 'Post'},
     answerId: {type: mongoose.Schema.Types.ObjectId, ref: 'Answer'}
 }, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+voteSchema.set('toObject', { virtuals: true });
+voteSchema.set('toJSON', { virtuals: true });
 
 voteSchema.method('toGraph', function toGraph() {
     return JSON.parse(JSON.stringify(this));

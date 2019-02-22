@@ -22,6 +22,9 @@ const commentSchema = mongoose.Schema({
     answerId: {type: mongoose.Schema.Types.ObjectId, ref: 'Answer'}
 }, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
+commentSchema.set('toObject', { virtuals: true });
+commentSchema.set('toJSON', { virtuals: true });
+
 commentSchema.method('toGraph', function toGraph() {
     return JSON.parse(JSON.stringify(this));
 });

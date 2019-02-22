@@ -27,7 +27,7 @@ const postSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Answer'
     }],*/
-    userID: {
+    userId: {
         required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
@@ -40,6 +40,9 @@ const postSchema = mongoose.Schema({
         type: Number
     }
 },{ toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+postSchema.set('toObject', { virtuals: true });
+postSchema.set('toJSON', { virtuals: true });
 
 //Virtual Populate
 postSchema.virtual('votes', {

@@ -1,4 +1,4 @@
-import Answer from 'answer.model';
+import Answer from './answer.model';
 
 export const answerTypeDefs = `
     type Answer{
@@ -12,12 +12,12 @@ export const answerTypeDefs = `
         voteValue: Int!
         postId: String!
     }
-    Input AnswerInput{
+    input AnswerInput{
         answer: String
         userID: String
         postId: String
     }
-    Input AnswerUpdate{
+    input AnswerUpdate{
         answer: String
         id: String
     }
@@ -30,11 +30,11 @@ export const answerTypeDefs = `
 export const answerResolver = {
     Mutation: {
         createAnswer: (_, { data }) => {
-            return Answer.create(data).then(out => out.toGraph(), error => error);
+            return Answer.create(data).then(out => out, error => error);
             // new ApolloError("Error creating Answer object","INTERNAL_SERVER_ERROR");
         },
         updateAnswer: (_, { data }) => {
-            return Answer.findByIdAndUpdate(data.id, { $set:{answer: data.answer } }).then( out => out.toGraph(),
+            return Answer.findByIdAndUpdate(data.id, { $set:{answer: data.answer } }).then( out => out,
                     error => error );
         }
     }

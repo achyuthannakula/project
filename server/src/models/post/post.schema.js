@@ -1,4 +1,4 @@
-import Post from 'post.model';
+import Post from './post.model';
 
 export const postTypeDefs = `
     type Post{
@@ -12,21 +12,21 @@ export const postTypeDefs = `
         comments: [String]
         answers: [String]
     }
-    Input PostInput{
+    input PostInput{
         heading: String
         description: String
-        userID: String
+        userId: String
     }
     extend type Mutation{
         createPost(data: PostInput!): Post
-        incViews(id: String) : String23
+        incViews(id: String) : String
     }
 `;
 
 export const postResolver = {
     Mutation: {
         createPost: (_, { data }) => {
-            return  Post.create(data).then( out => out.toGraph(), error => error);
+            return  Post.create(data).then( out => out, error => error);
         },
         incViews:(_, { id }) => {
             return Post.findByIdAndUpdate(id, { $inc: { views : 1 } }).then( out => out.views, error => error);

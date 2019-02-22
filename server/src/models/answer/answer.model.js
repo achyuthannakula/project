@@ -30,10 +30,13 @@ const answerSchema = mongoose.Schema({
         default: 0
     },
     postId:{
-        type:  mongoose.Schema.Types.objectId,
+        type:  mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     }
-}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
+});
+
+answerSchema.set('toObject', { virtuals: true });
+answerSchema.set('toJSON', { virtuals: true });
 
 answerSchema.method('toGraph', function toGraph() {
     return JSON.parse(JSON.stringify(this));

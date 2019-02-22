@@ -1,4 +1,4 @@
-import Comment from 'comment.model';
+import Comment from './comment.model';
 
 export const commentTypeDefs = `
     type Comment{
@@ -10,11 +10,15 @@ export const commentTypeDefs = `
         postId: String
         answerId: String
     }
-    Input CommentInput{
+    input ToId{
+        to: String,
+        toId: String
+    }
+    input CommentInput{
         comment: String
         userId: String
         to: String
-        toId: { to: String, toId:String}
+        toId: ToId
     }
     extend type Mutation{
         createComment(data: CommentInput!): Comment 
@@ -24,7 +28,7 @@ export const commentTypeDefs = `
 export const commentResolver = {
     Mutation: {
         createComment: (_, { data }) => {
-            return  Comment.create(data).then( out => out.toGraph(), error => error);
+            return  Comment.create(data).then( out => out, error => error);
         }
     }
 };

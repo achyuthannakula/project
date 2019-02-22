@@ -32,7 +32,10 @@ const userSchema = new mongoose.Schema({
 
 userSchema.method('toGraph', function toGraph() {
     return JSON.parse(JSON.stringify(this));
-}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
+});
+
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 userSchema.virtual('answers', {
     ref: 'Answer',
