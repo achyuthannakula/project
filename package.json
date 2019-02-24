@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"cd server && npm install && node dist/index.js\" \"cd client && npm install && npm start\""
+    "start": "concurrently \"cd client && npm install && npm start\" \"cd server && npm install && node dist/index.js\""
   },
   "repository": {
     "type": "git",
