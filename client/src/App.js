@@ -1,28 +1,36 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import {Route, withRouter} from 'react-router-dom';
+import auth from './Auth';
+import Callback from './components/callback';
+import Nav from './components/nav';
+import Home from './components/home'
 import './App.css';
 
 class App extends Component {
+
+  async componentDidMount() {
+    if (this.props.location.pathname === '/callback') return;
+    try {
+      await auth.silentAuth();
+      this.forceUpdate();
+    } catch (err) {
+      if (err.error === 'login_required') return;
+      console.log(err.error);
+    }
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <Nav />
+        <div style={{marginTop: "80px"}}>
+            <h1>Welcome to my app</h1>
+            <Route exact path='/' component={Home}/>
+            <Route exact path='/callback' component={Callback}/>
+        </div>
       </div>
     );
   }
 }
 
-export default App;
+export default withRouter(App);

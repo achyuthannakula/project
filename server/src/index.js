@@ -51,7 +51,7 @@ const server = new ApolloServer({
                 user
             };
         }else{
-            return {user:"user"};
+            return {user:"guest"};
         }
     },
 });

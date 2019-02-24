@@ -50,7 +50,7 @@ class Auth {
     localStorage.setItem(this.authFlag, JSON.stringify(false));
     this.auth0.logout({
       returnTo: 'http://localhost:3000',
-      clientID: 'D1lahFIpV82Mum7TimXgG0WPxpP8suGo',
+      clientID: 'Z999dm2xolFnCiOUE913uNvIiMAq3sOv',
     });
   }
 

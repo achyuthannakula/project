@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \\\"cd ./server && babel-node --presets env ./src/index.js\\\" \\\"cd ./client && npm start\\\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "concurrently \"cd server && npm run build && node dist/index.js\" \"cd client && npm start\""
   },
   "repository": {
     "type": "git",
