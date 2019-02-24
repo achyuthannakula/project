@@ -1,0 +1,24 @@
+{
+  "name": "MyProject",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \\\"cd server && babel-node --presets env src/index.js\\\" \\\"cd client && npm start\\\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/annakulaachyuth/project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/annakulaachyuth/project/issues"
+  },
+  "homepage": "https://github.com/annakulaachyuth/project#readme",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^4.1.0"
+  }
+}
