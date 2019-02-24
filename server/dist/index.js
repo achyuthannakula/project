@@ -67,7 +67,7 @@ var server = new ApolloServer({
     }
 });
 
-server.listen().then(function (_ref2) {
+server.listen({ port: 5000, path: "/graphql" }).then(function (_ref2) {
     var url = _ref2.url;
 
     console.log('\uD83D\uDE80  Server ready at ' + url);

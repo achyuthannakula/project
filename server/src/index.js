@@ -56,6 +56,6 @@ const server = new ApolloServer({
     },
 });
 
-server.listen(5000).then( ({ url })=> {
+server.listen({port: 5000, path:"/graphql"}).then( ({ url })=> {
     console.log(`🚀  Server ready at ${url}`);
 });
