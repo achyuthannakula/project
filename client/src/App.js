@@ -25,7 +25,7 @@ class App extends Component {
         <Nav />
         <div style={{marginTop: "80px"}}>
             <h1>Welcome to my app</h1>
-            <Route exact path='/' component={Home}/>
+            {/*<Route exact path='/' component={Home}/>*/}
             <Route exact path='/callback' component={Callback}/>
         </div>
       </div>
