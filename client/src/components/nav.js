@@ -10,6 +10,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import Modal from '@material-ui/core/Modal';
+import QuestionModel from '../util/questionModal'
 
 import auth from '../Auth'
 
@@ -28,57 +30,82 @@ const styles = {
 
  class SimpleAppBar extends Component {
     state = {
-        open: false
+        modelOpen: false,
+        anchorEl: null
     };
 
-    handleAvatarClick = () => {
-        this.setState(state => state.open = !state.open);
+    handleAvatarClick = (e) => {
+        this.setState({anchorEl : e.currentTarget});
     };
 
     handleMenuClose = () => {
-        this.setState(state => state.open = !state.open);
+        this.setState({anchorEl : null});
     };
 
-    render() {
+    handleModelOpen = () => {
+        this.setState(state => state.modelOpen = true);
+    };
+
+    handleModelClose = () => {
+        this.setState(state => state.modelOpen = false);
+    };
+
+
+     render() {
          const { classes } = this.props;
-         const { open } =this.state;
+         const anchorEl = this.state.anchorEl;
+         const  open  = Boolean(anchorEl);
 
          return (
-             <React.Fragment>
+             <div>
                  <CssBaseline/>
                  <AppBar position="fixed">
                      <Toolbar>
                          <Typography className={classes.root} variant="h6" color="inherit">
                              Project
                          </Typography>
-                         { (!auth.isAuthenticated() && <Button color="inherit" onClick={ () => auth.login() }>Login</Button>) ||
-                         <ButtonBase
-                             className={classes.avatar}
-                             centerRipple={true}>
-                             <Avatar
-                                 onClick={this.handleAvatarClick}
-                                 children="Letter"
-                             />
-                         </ButtonBase>}
-                         <Menu
-                             id="menu-appbar"
-                             anchorOrigin={{
-                                 vertical: 'top',
-                                 horizontal: 'right',
-                             }}
-                             transformOrigin={{
-                                 vertical: 'top',
-                                 horizontal: 'right',
-                             }}
-                             open={open}
-                             onClose={this.handleMenuClose}
-                         >
-                             <MenuItem>Profile</MenuItem>
-                             <MenuItem onClick={() => auth.logout()}>Logout</MenuItem>
-                         </Menu>
+                         {auth.isAuthenticated() &&
+                            <Button color="inherit" onClick={this.handleModelOpen}>Add Question</Button>
+                         }
+                         <Modal
+                            open={this.state.modelOpen}
+                            onClose={this.handleModelClose}
+                            children={<QuestionModel/>}
+                            root={{verticalAlign:"middle"}}
+                            />
+
+                         { !auth.isAuthenticated() ?
+                             <Button color="inherit" onClick={ () => auth.login() }>Login</Button> :
+                             <div><ButtonBase
+                                 className={classes.avatar}
+                                 centerRipple={true}>
+                                 <Avatar
+                                     onClick={this.handleAvatarClick}
+                                     children="Letter"
+                                 />
+                             </ButtonBase>
+                             <Menu
+                                 id="menu-appbar"
+                                 anchorEl={anchorEl}
+                                 anchorOrigin={{
+                                     vertical: 'top',
+                                     horizontal: 'right',
+                                 }}
+                                 transformOrigin={{
+                                     vertical: 'top',
+                                     horizontal: 'right',
+                                 }}
+                                 open={open}
+                                 onClose={this.handleMenuClose}
+                                 >
+                                 <MenuItem>Profile</MenuItem>
+                                 <MenuItem onClick={() => auth.logout()}>Logout</MenuItem>
+                             </Menu></div>
+                         }
+
                      </Toolbar>
                  </AppBar>
-             </React.Fragment>
+             </div>
          );
      }
 }

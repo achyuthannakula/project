@@ -3,7 +3,6 @@ import {Route, withRouter} from 'react-router-dom';
 import auth from './Auth';
 import Callback from './components/callback';
 import Nav from './components/nav';
-import Home from './components/home'
 import Answer from "./components/answer"
 
 class App extends Component {
