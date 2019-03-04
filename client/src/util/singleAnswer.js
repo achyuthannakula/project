@@ -1,5 +1,5 @@
 import React from "react";
-import Divider from "../components/answer";
+import Divider from "@material-ui/core/Divider";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
