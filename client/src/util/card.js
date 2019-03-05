@@ -15,7 +15,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Avatar from "@material-ui/core/Avatar";
 
 const styles = {
-    card: {},
+    card: {
+        marginBottom: "1em"
+    },
     author: {
         display: "flex",
         margin: "10px 0px",
