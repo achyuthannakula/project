@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import SingleAnswer from "../util/singleAnswer";
 import { withStyles } from "@material-ui/core/es/styles";
 import Grid from "@material-ui/core/Grid";
 import {Typography} from "@material-ui/core";
@@ -8,7 +7,12 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import InputBase from "@material-ui/core/InputBase";
+import Spinner from "../util/spinner";
+import Auth from "../Auth"
 import Card from "../util/card";
+
+import { Query } from "react-apollo";
+import gql from "graphql-tag";
 
 const BootstrapInput = withStyles(theme => ({
     root: {
@@ -107,10 +111,37 @@ class Home extends Component{
                         </div>
                     </div>
                     <div style={{marginTop: "1em"}}>
-                        <Card />
-                        <Card />
-                        <Card />
-                        <Card />
+                        <Query
+                        query={gql`
+                        {
+                            posts{
+                                _id
+                                heading
+                                description
+                                userId{
+                                  name
+                                }
+                                createdDate
+                            }
+                        }
+                        `}>
+                            {({ loading, error, data }) => {
+                                if (loading) return <Spinner />;
+                                if (error) return <p>Error :(</p>;
+                                {console.log(data);}
+                                return data.posts.map(({_id, heading }) => (
+                                    <div key={_id}>
+                                        <p>{`${_id} by ${heading}`}</p>
+                                    </div>
+                                ));
+                            }}
+                            {/*<div style={{marginTop: "1em"}}>
+                                <Card />
+                                <Card />
+                                <Card />
+                                <Card />
+                            </div>*/}
+                        </Query>
                     </div>
                 </Grid>
             </Grid>

@@ -8,7 +8,7 @@ import schema from './models/schema';
 
 //mongodb+srv://achyuth:asd@achyuth-shard-00-01-5p5kc.mongodb.net:27017/project
 //mongodb://localhost:27017/project
-mongoose.connect("mongodb+srv://achyuth:asd@achyuth-5p5kc.mongodb.net/test?retryWrites=true", { useNewUrlParser: true }).then(() => {
+mongoose.connect("mongodb+srv://achyuth:asd@achyuth-5p5kc.mongodb.net/test?retryWrites=true", { useFindAndModify: false, useNewUrlParser: true }).then(() => {
     console.log("success");
 
 }).catch(err => {
@@ -37,21 +37,25 @@ const server = new ApolloServer({
     schema,
     context: ({ req }) => {
         // simple auth check on every request
-        const token = req.headers.authorization;
-        if(token) {
+        //console.log(req.headers.authorization+"--");
+        const token = req.headers.authorization || null;
+        console.log("--"+token);
+        if(token && token.length > 10) {
             const user = new Promise((resolve, reject) => {
                 jwt.verify(token, getKey, options, (err, decoded) => {
+                    //console.log("--error");
                     if (err) {
                         return reject(err);
                     }
-                    resolve(decoded.email);
+                    resolve(decoded);
                 });
             });
             return {
                 user
             };
         }else{
-            return {user:"guest"};
+            //console.log("else");
+            return null;
         }
     },
 });

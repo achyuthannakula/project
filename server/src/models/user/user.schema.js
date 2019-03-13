@@ -22,7 +22,10 @@ export const userTypeDefs = `
         via: String
     }
     extend type Query{
-        user(id: String): User
+        userUpdate: User
+    }
+    extend type Query{
+        user: User
     }
     extend type Mutation{
         createUser(data: UserInput!): User
@@ -30,8 +33,20 @@ export const userTypeDefs = `
 `;
 export const userResolver = {
     Query: {
-        user: (_, { id }, context) => {
+        user: async (_, {}, { user }) => {
+            user = await user;
+            if(user == null)
+                return null;
+            else
+                return User.findOne({email: user.email}).then(doc => doc, err => err);
             return User.findById(id).populate('posts').populate('answers').then(data => {console.log(context);return data;});
+        },
+        userUpdate: async (_, {}, { user }) => {
+            user = await user;
+            return User.findOneAndUpdate({email: user.email},
+                {name: user.name, username: user.nickname, email: user.email, email_verified: user.email_verification, profilePicture: user.picture, via: user.sub},
+                { upsert: true, new: true } ).
+            then(doc => doc, err => err);
         }
     },
     Mutation:{

@@ -55,7 +55,8 @@ const styles = {
          const { classes } = this.props;
          const anchorEl = this.state.anchorEl;
          const  open  = Boolean(anchorEl);
-
+         const userInfo = this.props.userInfo;
+         console.log("in nav");
          return (
              <div>
                  <CssBaseline/>
@@ -79,10 +80,10 @@ const styles = {
                              <div><ButtonBase
                                  className={classes.avatar}
                                  centerRipple={true}>
-                                 <Avatar
-                                     onClick={this.handleAvatarClick}
-                                     children="Letter"
-                                 />
+                                 {userInfo &&
+                                 userInfo.profilePicture &&
+                                 <Avatar onClick={this.handleAvatarClick} src = {userInfo.profilePicture}/> ||
+                                 <Avatar onClick={this.handleAvatarClick} children="T"/>}
                              </ButtonBase>
                              <Menu
                                  id="menu-appbar"

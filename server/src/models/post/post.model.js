@@ -51,6 +51,10 @@ postSchema.virtual('votes', {
     foreignField: 'postId'
 });
 
+postSchema.virtual('id').get(function() {
+    return toString(this._id);
+})
+
 postSchema.virtual('answers', {
     ref: 'Answer',
     localField: '_id',

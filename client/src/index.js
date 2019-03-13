@@ -8,7 +8,7 @@ import { ApolloProvider } from "react-apollo";
 import auth from "./Auth"
 
 const client = new ApolloClient({
-    uri: "http://localhost:4000/graphql",
+    uri: "http://localhost:5000/",
     request: operation => {
         operation.setContext(context => ({
             headers: {
@@ -18,11 +18,10 @@ const client = new ApolloClient({
         }));
     },
 });
-
 ReactDOM.render(
     <BrowserRouter>
         <ApolloProvider client={client}>
-            <App />
+            <App client={client}/>
         </ApolloProvider>
     </BrowserRouter>
     , document.getElementById('root'));
