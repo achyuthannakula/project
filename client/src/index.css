@@ -8,6 +8,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+img{
+  max-width: 100%;
+}
+.ql-container {
+    height: 100%;
+    min-height: 100%;
+    overflow-y: auto;
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

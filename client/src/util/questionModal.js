@@ -9,8 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import Paper from "@material-ui/core/Paper";
 import StepContent from "@material-ui/core/StepContent";
 import TextField from "@material-ui/core/TextField";
-import CKEditor from '@ckeditor/ckeditor5-react';
-import InlineEditor from '@ckeditor/ckeditor5-build-inline';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const styles = theme => ({
     paper: {
@@ -48,7 +48,34 @@ class QuestionModel extends React.Component {
         skipped: new Set(),
         question: "Test",
         description: "aac",
-        styles : editorTheme
+        styles : editorTheme,
+        editorHtml: ''
+    };
+
+    modules = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{'list': 'ordered'}, {'list': 'bullet'}],
+            ['code-block', 'link', 'image', 'video']
+        ],
+        clipboard: {
+            // toggle to add extra line breaks when pasting HTML:
+            matchVisual: false,
+        }
+    };
+
+    formats = [
+        'bold', 'italic', 'underline', 'strike', 'blockquote',
+        'list', 'bullet',
+        'code-block', 'link', 'image', 'video'
+    ];
+
+    handleChange = (html) => {
+        this.setState({ editorHtml: html });
+    };
+
+    handleQuestionChange = (event) => {
+        this.setState({question: event.target.value});
     };
 
     getSteps = () => {
@@ -63,45 +90,33 @@ class QuestionModel extends React.Component {
                         id="question"
                         label="Question"
                         value={this.state.question}
-                        onChange={this.handleChange('question')}
+                        onChange={this.handleQuestionChange}
                         margin="normal"
                     />
                 );
             case 1:
                 return (
-                    <div style={this.state.styles}>
-                    <CKEditor
-                        editor={ InlineEditor }
-                        data={this.state.description || ''}
-                        onInit={ editor => {
-                            // You can store the "editor" and use when it is needed.
-                            console.log( this.state.description+'---Editor is ready to use!', editor );
-                        } }
-                        //"heading" , "|" , "bold", "italic", "link", "bulletedList" ,"numberedList", "imageUpload" ,"blockQuote", "insertTable", "mediaEmbed" , "undo" ,"redo"
-                        config={{toolbar: [ "bold", "italic", "link", "bulletedList","numberedList", "undo" ,"redo"]}}
-                        onChange={ ( event, editor ) => {
-                            this.state.description = editor.getData();
-                            //console.log( event, "----"+t  his.state.description);
-                        } }
-                        onBlur={ editor => {
-                            this.setState({styles: editorTheme});
-                        } }
-                        onFocus={ editor => {
-                            this.setState({styles: null});
-                        } }
-                        disabled={false}
-                    />
+                    <div id="quill" style={this.state.styles}>
+                        <ReactQuill
+                            theme={"snow"}
+                            scrollingContainer={".ql-container"}
+                            onChange={this.handleChange}
+                            value={this.state.editorHtml}
+                            modules={this.modules}
+                            formats={this.formats}
+                            bounds={'.app'}
+                            placeholder={"Enter the text here..."}
+                        />
                     </div>
                 );
             case 2:
                 return (<div><Typography  variant="h6" component="h2" children={this.state.question} gutterBottom />
-                    <div dangerouslySetInnerHTML={{__html: this.state.description}}/></div>);
+                    <div dangerouslySetInnerHTML={{__html: this.state.editorHtml}}/></div>);
             default:
                 return 'Unknown step';
         }
     };
 
-    handleChange = index => event => this.setState({[index]: event.target.value});
     isStepOptional = step => step === 1;
 
     handleNext = () => {

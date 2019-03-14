@@ -76,33 +76,6 @@ class App extends Component {
                     </div>
                 </div>
             );
-        /*if(!this.state.tryingSilent)
-            return (
-                auth.isAuthenticated() && <Query query={gql`{
-                    user{
-                        username
-                        name
-                        email
-                        profilePicture
-                    }
-                }`}>
-
-                    {({ loading, error, data }) => {
-                        if (loading) return <Spinner />;
-                        if (error) return <p>Error :(</p>;
-                        console.log("Auth done or not ",auth.isAuthenticated());
-                        console.log(data.user);
-                        return (
-                            <div className="App">
-                            <Nav user={data.user}/>
-                            <div style={{ margin: "80px 20px 20px 20px" }}>
-                                <Route exact path='/' component={Home}/>
-                                <Route exact path='/callback' component={Callback}/>
-                            </div></div>
-                        )
-                    }}
-                </Query>
-            );*/
         return <Spinner />;
     }
 }
