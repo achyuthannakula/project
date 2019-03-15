@@ -10,7 +10,6 @@ import Paper from "@material-ui/core/Paper";
 import StepContent from "@material-ui/core/StepContent";
 import TextField from "@material-ui/core/TextField";
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 
 const styles = theme => ({
     paper: {
@@ -18,7 +17,7 @@ const styles = theme => ({
         position: 'relative',
         top: '50%',
         transform: 'translate(0%, -50%)',
-        width: '70%',
+        width: '80%',
         backgroundColor: theme.palette.background.paper,
         boxShadow: theme.shadows[5],
         padding: theme.spacing.unit * 4,
@@ -37,6 +36,10 @@ const styles = theme => ({
     instructions: {
         marginTop: theme.spacing.unit,
         marginBottom: theme.spacing.unit,
+    },
+    scroll: {
+        maxHeight: "80vh",
+        overflow: "scroll"
     }
 });
 
@@ -99,7 +102,6 @@ class QuestionModel extends React.Component {
                     <div id="quill" style={this.state.styles}>
                         <ReactQuill
                             theme={"snow"}
-                            scrollingContainer={".ql-container"}
                             onChange={this.handleChange}
                             value={this.state.editorHtml}
                             modules={this.modules}
@@ -111,7 +113,7 @@ class QuestionModel extends React.Component {
                 );
             case 2:
                 return (<div><Typography  variant="h6" component="h2" children={this.state.question} gutterBottom />
-                    <div dangerouslySetInnerHTML={{__html: this.state.editorHtml}}/></div>);
+                    <div className={"ql-snow"}><div className={"ql-editor"} dangerouslySetInnerHTML={{__html: this.state.editorHtml}}/></div></div>);
             default:
                 return 'Unknown step';
         }
@@ -173,7 +175,7 @@ class QuestionModel extends React.Component {
 
         return (
             <div className={classes.paper}>
-                <Stepper activeStep={activeStep} orientation="vertical">
+                <Stepper className={classes.scroll} activeStep={activeStep} orientation="vertical">
                     {steps.map((label, index) => {
                         const props = {};
                         const labelProps = {};

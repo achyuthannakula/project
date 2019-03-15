@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^12.0.0",
-    "@ckeditor/ckeditor5-build-inline": "^12.0.0",
-    "@ckeditor/ckeditor5-react": "^1.1.1",
     "@material-ui/core": "^3.9.2",
     "@material-ui/icons": "^3.0.2",
     "apollo-boost": "^0.1.28",
@@ -37,8 +34,5 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": "http://localhost:5000",
-  "devDependencies": {
-    "uglifyjs-webpack-plugin": "^2.1.2"
-  }
+  "proxy": "http://localhost:5000"
 }
