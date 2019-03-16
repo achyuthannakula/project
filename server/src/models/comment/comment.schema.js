@@ -10,15 +10,11 @@ export const commentTypeDefs = `
         postId: String
         answerId: String
     }
-    input ToId{
-        to: String,
-        toId: String
-    }
     input CommentInput{
         comment: String
         userId: String
         to: String
-        toId: ToId
+        toId: String
     }
     extend type Mutation{
         createComment(data: CommentInput!): Comment 

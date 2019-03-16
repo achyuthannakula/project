@@ -9,7 +9,11 @@ import Typography from '@material-ui/core/Typography';
 import Paper from "@material-ui/core/Paper";
 import StepContent from "@material-ui/core/StepContent";
 import TextField from "@material-ui/core/TextField";
+import Spinner from "./spinner";
+import { gql } from 'apollo-boost';
+import { Mutation } from "react-apollo";
 import ReactQuill from 'react-quill';
+import {Redirect} from "react-router-dom";
 
 const styles = theme => ({
     paper: {
@@ -49,10 +53,10 @@ class QuestionModel extends React.Component {
     state = {
         activeStep: 0,
         skipped: new Set(),
-        question: "Test",
-        description: "aac",
+        question: "",
         styles : editorTheme,
-        editorHtml: ''
+        editorHtml: "",
+        postFlag: false
     };
 
     modules = {
@@ -95,6 +99,9 @@ class QuestionModel extends React.Component {
                         value={this.state.question}
                         onChange={this.handleQuestionChange}
                         margin="normal"
+                        autoFocus={true}
+                        autoComplete={"off"}
+                        placeholder={"Enter Your Question"}
                     />
                 );
             case 1:
@@ -113,7 +120,8 @@ class QuestionModel extends React.Component {
                 );
             case 2:
                 return (<div><Typography  variant="h6" component="h2" children={this.state.question} gutterBottom />
-                    <div className={"ql-snow"}><div className={"ql-editor"} dangerouslySetInnerHTML={{__html: this.state.editorHtml}}/></div></div>);
+                    {!this.state.skipped.has(1) && <div className={"ql-snow"}><div className={"ql-editor"} dangerouslySetInnerHTML={{__html: this.state.editorHtml}}/></div>}
+                </div>);
             default:
                 return 'Unknown step';
         }
@@ -227,12 +235,32 @@ class QuestionModel extends React.Component {
                 <div>
                     {activeStep === steps.length && (
                         <Paper square elevation={0} className={classes.resetContainer}>
-                            <Typography className={classes.instructions}>
-                                All steps completed - you&apos;re finished
-                            </Typography>
-                            <Button onClick={this.handleReset} className={classes.button}>
-                                Reset
-                            </Button>
+                            <Mutation mutation={gql`
+                                mutation CreatePost($postInput: PostInput!) {
+                                    createPost(data: $postInput) {
+                                        id
+                                    }
+                                }
+                            `}>{(createPost, { loading, error, data }) => {
+                                if (loading) return <Spinner />;
+                                if (data){ console.log("success data-",data);return <div>{data.createPost.id}</div>;}
+                                if (error) return `Error!: ${error}`;
+                                const desc = !this.state.skipped.has(1) ?
+                                    "<div class='ql-snow'><div class='ql-editor'>" + this.state.editorHtml + "</div></div>" :
+                                    null;
+                                console.log("in mutation caller");
+                                    createPost({
+                                        variables: {
+                                            postInput: {
+                                                heading: this.state.question,
+                                                description: desc,
+                                                userId: this.props.userInfo.id
+                                            }
+                                        }
+                                    });
+                                return <div>Uploading</div>
+                            }}
+                            </Mutation>
                         </Paper>
                     )}
                 </div>

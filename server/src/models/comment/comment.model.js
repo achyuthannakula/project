@@ -11,8 +11,7 @@ const commentSchema = mongoose.Schema({
         required: true,
     },
     date:{
-        type: Date,
-        required: true
+        type: Date
     },
     to:{
         type: String,
@@ -30,7 +29,10 @@ commentSchema.method('toGraph', function toGraph() {
 });
 
 commentSchema.virtual('toId').set(function(v){
-    this[v.to+'Id'] = v.toId;
+    if(this.to === 'post')
+        this.postId = v;
+    else
+        this.answerId = v;
 });
 
 commentSchema.pre('save',function (next) {

@@ -71,8 +71,9 @@ const styles = {
                          <Modal
                             open={this.state.modelOpen}
                             onClose={this.handleModelClose}
-                            children={<QuestionModel/>}
+                            children={<QuestionModel userInfo={this.props.userInfo}/>}
                             root={{verticalAlign:"middle"}}
+
                             />
 
                          { !auth.isAuthenticated() ?

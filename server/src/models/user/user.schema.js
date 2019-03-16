@@ -39,7 +39,7 @@ export const userResolver = {
                 return null;
             else
                 return User.findOne({email: user.email}).then(doc => doc, err => err);
-            return User.findById(id).populate('posts').populate('answers').then(data => {console.log(context);return data;});
+            //return User.findById(id).populate('posts').populate('answers').then(data => {console.log(context);return data;});
         },
         userUpdate: async (_, {}, { user }) => {
             user = await user;

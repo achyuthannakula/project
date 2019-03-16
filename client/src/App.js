@@ -46,6 +46,7 @@ class App extends Component {
     updateUser = async () => {
         const query = gql`{
                         user{
+                            id
                             username
                             name
                             email

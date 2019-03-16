@@ -6,13 +6,12 @@ const voteSchema = mongoose.Schema({
         required: true,
         default: 0
     },
-    userid: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
     date: {
-        type: Date,
-        required: true
+        type: Date
     },
     to:{
         type: String,
@@ -30,11 +29,10 @@ voteSchema.method('toGraph', function toGraph() {
 });
 
 voteSchema.virtual('toId').set(function(v){
-    this[v.to+'Id'] = v.toId;
-});
-
-voteSchema.virtual('toId').set(function(v){
-    this[v.to+'Id'] = v.toId;
+    if(this.to === 'post')
+        this.postId = v;
+    else
+        this.answerId = v;
 });
 
 voteSchema.pre('save',function (next) {

@@ -37,7 +37,8 @@ const postSchema = mongoose.Schema({
         ref: 'Vote'
     }],*/
     voteValue:{
-        type: Number
+        type: Number,
+        default: 0
     }
 },{ toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
@@ -50,10 +51,6 @@ postSchema.virtual('votes', {
     localField: '_id',
     foreignField: 'postId'
 });
-
-postSchema.virtual('id').get(function() {
-    return toString(this._id);
-})
 
 postSchema.virtual('answers', {
     ref: 'Answer',

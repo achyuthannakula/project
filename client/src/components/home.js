@@ -115,13 +115,23 @@ class Home extends Component{
                         query={gql`
                         {
                             posts{
-                                _id
+                                id
                                 heading
                                 description
+                                answers{
+                                    answer
+                                    userId{
+                                        name
+                                        profilePicture
+                                    }
+                                    createdDate
+                                }
                                 userId{
                                   name
+                                  profilePicture
                                 }
                                 createdDate
+                                voteValue
                             }
                         }
                         `}>
@@ -129,11 +139,8 @@ class Home extends Component{
                                 if (loading) return <Spinner />;
                                 if (error) return <p>Error :(</p>;
                                 {console.log(data);}
-                                return data.posts.map(({_id, heading,description }) => (
-                                    <div key={_id}>
-                                        <p>{`${_id} by ${heading}`}</p>
-                                        <div dangerouslySetInnerHTML={{__html: description}}></div>
-                                    </div>
+                                return data.posts.map((data) => (
+                                    <Card key={data.id} data={data}/>
                                 ));
                             }}
                             {/*<div style={{marginTop: "1em"}}>
