@@ -14,9 +14,10 @@ export const postTypeDefs = `
         comments: [Comment]
         answers: [Answer]
         voteValue: Int
+        votes:[Vote]
     }
     extend type Query{
-        posts : [Post]
+        posts(id :ID) : [Post]
         post(id :ID) : Post
     }
     input PostInput{
@@ -50,28 +51,55 @@ export const postResolver = {
                 .populate('comments')
                 .then(data => {return data;});
         },
-        posts: async (_, {}, { user }) => {
+        posts: async (_, { id }, { user }) => {
             //console.log(context);
             user = await user;
             //console.log("---",u,"---");
-            return Post.find({}).populate('userId')
-                .populate({
-                    path: 'answers',
-                    options: {limit: 1, sort: {voteValue: -1, date: -1} },
-                    populate: {
-                        path: 'userInfo'
-                    }
-                })
-                .populate({
-                    path: 'comments',
-                    options: {limit: 5, sort: {date: -1}},
-                    populate: {
-                        path: 'userInfo'
-                    }
-                })
-                .sort({'createdDate': -1})
-                .limit(10)
-                .then(data => {return data;});
+            if (id)
+                return Post.find({}).populate('userId')
+                    .populate({
+                        path: 'answers',
+                        options: {limit: 1, sort: {voteValue: -1, date: -1} },
+                        populate: {
+                            path: 'userInfo'
+                        }
+                    })
+                    .populate({
+                        path: 'comments',
+                        options: {limit: 5, sort: {date: -1}},
+                        populate: {
+                            path: 'userInfo'
+                        }
+                    })
+                    .populate({
+                        path: 'votes',
+                        match: {
+                            userId : {$eq: id}
+                        },
+                        options: {limit : 1}
+                    })
+                    .sort({'createdDate': -1})
+                    .limit(10)
+                    .then(data => {return data;});
+            else
+                return Post.find({}).populate('userId')
+                    .populate({
+                        path: 'answers',
+                        options: {limit: 1, sort: {voteValue: -1, date: -1} },
+                        populate: {
+                            path: 'userInfo'
+                        }
+                    })
+                    .populate({
+                        path: 'comments',
+                        options: {limit: 5, sort: {date: -1}},
+                        populate: {
+                            path: 'userInfo'
+                        }
+                    })
+                    .sort({'createdDate': -1})
+                    .limit(10)
+                    .then(data => {return data;});
         }
     },
     Mutation: {

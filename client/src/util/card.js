@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -71,20 +71,21 @@ const styles = {
     }
 };
 
-function SimpleCard(props) {
-    const { classes, data } = props;
-    const { heading, voteValue, createdDate, userId , answers} = data;
-    const description = data.description.replace(/<\/?[^>]+>/ig, " ").trim();
-    const ansCount = answers.length;
-    const bull = <span className={classes.bullet}>•</span>;
-    const out =
-        "I got married for the second time 15 years ago and my wife had a 15 year old daughter. Her daughter is 6′ tall and very shapely and pretty. She lost her father at the age of 7 to cancer so she went years without a father until I married her mother. I had told my wife that the day I marry her, her daughter will then be my daughter also and I treated her every bit as good as my own children including financing her college, paying rent, buying her supplies, etc. Her daughter loved having a Dad in her life a";
+class SimpleCard extends Component{
 
-    const monthNames = [
+    constructor(props){
+        super(props);
+        const voteObj = this.props.data.votes;
+        this.state = {
+            voteId: voteObj.length > 0 ? voteObj[0].id : null,
+            userVoteValue: voteObj.length > 0 ? voteObj[0].value : 0
+        }
+    }
+
+    format = (date) => {
+        const monthNames = [
         "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-    ];
-    const format =(date) => {
-        console.log(typeof date,date);
+        ];
         date = new Date(parseInt(date));
         const ourDate = new Date();
         const dateObject = {
@@ -106,79 +107,95 @@ function SimpleCard(props) {
             return monthNames[dateObject.M] +" "+ dateObject.y;
         else if (dateObject.M !== ourDateObject.M)
             return monthNames[dateObject.M] +" "+ dateObject.d;
-        else if (dateObject.d !== ourDateObject.d)
-            return dateObject.h+":"+dateObject.m +","+ dateObject.d;
         else {
-            const diff = (ourDateObject.h - dateObject.h) * 60 - dateObject.m + ourDateObject.m;
-            if ( diff > 60)
-                return (ourDateObject.h - dateObject.h) + " hrs ago";
-            else
-                return diff + " min's ago";
+            let diff = 0;
+            if (dateObject.d !== ourDateObject.d) {
+                diff = (ourDateObject.d - dateObject.d) * 24 - dateObject.h + ourDateObject.h;
+                if (diff >= 24)
+                    return dateObject.d +", "+ monthNames[dateObject.M];
+                else if(diff !== 0)
+                    return diff + " hr's ago";
+            }
+            diff = (ourDateObject.h - dateObject.h) * 60 - dateObject.m + ourDateObject.m;
+            return diff + " min's ago";
         }
     };
 
-    return (
-        <Card className={classes.card}>
-            <CardContent>
-                <Typography
-                    className={classes.title}
-                    color="textSecondary"
-                    gutterBottom
-                >
-                    Question
-                </Typography>
 
-                <Link to="./" className={classes.anchor}>
-                    <Typography variant="h6" component="h2" gutterBottom>
-                        {heading}
+    render(){
+        console.log(this.state);
+        const { data, classes } = this.props;
+        const { heading, voteValue, createdDate, userId , answers} = data;
+
+        const { voteId, userVoteValue } = this.state;
+        //const description = data.description.replace(/<\/?[^>]+>/ig, " ").trim();
+        const ansCount = answers.length;
+        //const bull = <span className={classes.bullet}>•</span>;
+
+
+        return (
+            <Card className={classes.card}>
+                <CardContent>
+                    <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                        gutterBottom
+                    >
+                        Question
                     </Typography>
-                </Link>
 
-                {ansCount === 0 ?
-                    <Typography className={classes.noans}>
-                        No answer yet<span className={classes.bullet}>·</span>
-                        <Typography className={classes.time}>{format(createdDate)}</Typography>
-                    </Typography> :
-                    (<div>
-                        <div className={classes.author}>
-                            <Avatar onClick={this.handleAvatarClick} src = {answers[0].userId.profilePicture ? answers[0].userId.profilePicture : '/nopic.jpg'}/>
-                            <div className={classes.avatarDiv}>
-                                <Typography>{answers[0].userId.name}</Typography>
-                                <Typography className={classes.time}>{format(answers[0].createdDate)}</Typography>
+                    <Link to="./" className={classes.anchor}>
+                        <Typography variant="h6" component="h2" gutterBottom>
+                            {heading}
+                        </Typography>
+                    </Link>
+
+                    {ansCount === 0 ?
+                        <Typography className={classes.noans}>
+                            No answer yet<span className={classes.bullet}>·</span>
+                            <Typography className={classes.time}>{this.format(createdDate)}</Typography>
+                        </Typography> :
+                        (<div>
+                            <div className={classes.author}>
+                                <Avatar onClick={this.handleAvatarClick} src = {answers[0].userId.profilePicture ? answers[0].userId.profilePicture : '/nopic.jpg'}/>
+                                <div className={classes.avatarDiv}>
+                                    <Typography>{answers[0].userId.name}</Typography>
+                                    <Typography className={classes.time}>{this.format(answers[0].createdDate)}</Typography>
+                                </div>
                             </div>
-                        </div>
-                        <Typography className={classes.ans}>{answers[0].answer.replace(/<\/?[^>]+>/ig, " ").trim()}</Typography>
-                    </div>)
-                }
-            </CardContent>
-            <CardActions>
-                <div className={classes.actionButton}>
-                    <Tooltip title="Answer">
-                        <IconButton>
-                            <Create />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Thubms Up">
-                        <IconButton>
-                            <TUp />
-                        </IconButton>
-                    </Tooltip>
-                    <Typography>{voteValue}</Typography>
-                    <Tooltip title="Thumbs Down">
-                        <IconButton>
-                            <TDn />
-                        </IconButton>
-                    </Tooltip>
-                </div>
+                            <Typography className={classes.ans}>{answers[0].answer.replace(/<\/?[^>]+>/ig, " ").trim()}</Typography>
+                        </div>)
+                    }
+                </CardContent>
+                <CardActions>
+                    <div className={classes.actionButton}>
+                        <Tooltip title="Answer">
+                            <IconButton>
+                                <Create />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Thubms Up">
+                            <IconButton color={userVoteValue > 0 ? "primary" : "default"}>
+                                <TUp/>
+                            </IconButton>
+                        </Tooltip>
+                        <Typography>{voteValue}</Typography>
+                        <Tooltip title="Thumbs Down" color={userVoteValue < 0 ? "primary" : "default"}>
+                            <IconButton>
+                                <TDn/>
+                            </IconButton>
+                        </Tooltip>
+                    </div>
 
-                <IconButton>
-                    <Tooltip title="Share">
-                        <ShareIcon />
-                    </Tooltip>
-                </IconButton>
-            </CardActions>
-        </Card>
-    );
+                    <IconButton>
+                        <Tooltip title="Share">
+                            <ShareIcon />
+                        </Tooltip>
+                    </IconButton>
+                </CardActions>
+            </Card>
+        );
+    }
 }
 
 SimpleCard.propTypes = {

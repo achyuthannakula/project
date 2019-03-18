@@ -40,6 +40,7 @@ class App extends Component {
     }
 
     onChangeUserData = (data) => {
+        localStorage.setItem('userInfo', JSON.stringify(data));
         this.setState({userInfo: data});
     };
 

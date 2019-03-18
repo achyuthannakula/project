@@ -8,7 +8,6 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import InputBase from "@material-ui/core/InputBase";
 import Spinner from "../util/spinner";
-import Auth from "../Auth"
 import Card from "../util/card";
 
 import { Query } from "react-apollo";
@@ -76,9 +75,15 @@ const styles = theme => ({
 
 
 class Home extends Component{
-    state = {
-        sort: 10
-    };
+
+    constructor(props) {
+        super(props);
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        this.state = {
+            sort: 10,
+            userInfo: userInfo
+        };
+    }
 
     handleSortChange = event => {
         this.setState({ sort: event.target.value });
@@ -86,6 +91,7 @@ class Home extends Component{
 
     render(){
         const { classes } = this.props;
+        const { userInfo } = this.state;
         return(
             <Grid  container justify={"center"}>
                 <Grid item xs={11} md={8}>
@@ -113,8 +119,8 @@ class Home extends Component{
                     <div style={{marginTop: "1em"}}>
                         <Query
                         query={gql`
-                        {
-                            posts{
+                        query Posts($id : ID){
+                            posts(id: $id){
                                 id
                                 heading
                                 description
@@ -130,17 +136,21 @@ class Home extends Component{
                                   name
                                   profilePicture
                                 }
+                                votes{
+                                    id
+                                    value
+                                }
                                 createdDate
                                 voteValue
                             }
                         }
-                        `}>
+                        `} variables={{id : userInfo ? userInfo.id : null}}>
                             {({ loading, error, data }) => {
                                 if (loading) return <Spinner />;
                                 if (error) return <p>Error :(</p>;
                                 {console.log(data);}
                                 return data.posts.map((data) => (
-                                    <Card key={data.id} data={data}/>
+                                    <Card key={data.id} data={data} userInfo={userInfo}/>
                                 ));
                             }}
                             {/*<div style={{marginTop: "1em"}}>

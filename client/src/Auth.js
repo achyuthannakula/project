@@ -49,6 +49,7 @@ class Auth {
 
     logout() {
         localStorage.setItem(this.authFlag, JSON.stringify(false));
+        localStorage.setItem('userInfo', null);
         this.auth0.logout({
             returnTo: 'http://localhost:3000',
             clientID: 'Z999dm2xolFnCiOUE913uNvIiMAq3sOv',
