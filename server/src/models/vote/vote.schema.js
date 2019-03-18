@@ -20,17 +20,21 @@ export const voteTypeDefs = `
         toId: String
     }
     extend type Mutation{
-        createVote(data: VoteInput!): Vote
+        createOrUpdateVote(data: VoteInput!): Vote
     }
 `;
 
 export const voteResolver = {
     Mutation: {
-        createVote: async (_, { data }, { user }) => {
+        createOrUpdateVote: async (_, { data }, { user }) => {
             if(!user)
                 throw new AuthenticationError('You must be logged in');
 
-            return Vote.findOne({userId: data.userId, to: data.to}).then(async out => {
+            let toKey = 'postId';
+            if(data.to === 'answer')
+                toKey = 'answerId';
+
+            return Vote.findOne({userId: data.userId, [toKey]: {$in: data.toId }}).then(async out => {
                 const val =  -(out ? out.value : 0) + data.value;
                 console.log(data);
                 if (data.to === 'post') {

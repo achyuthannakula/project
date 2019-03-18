@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {withRouter} from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -177,6 +178,7 @@ class QuestionModel extends React.Component {
     }
 
     render() {
+        console.log("inside question model",this.props);
         const { classes } = this.props;
         const steps = this.getSteps();
         const { activeStep } = this.state;
@@ -239,11 +241,12 @@ class QuestionModel extends React.Component {
                                 mutation CreatePost($postInput: PostInput!) {
                                     createPost(data: $postInput) {
                                         id
+                                        headingx
                                     }
                                 }
                             `}>{(createPost, { loading, error, data }) => {
                                 if (loading) return <Spinner />;
-                                if (data){ console.log("success data-",data);return <div>{data.createPost.id}</div>;}
+                                if (data){ console.log("success data-",data);return <div>--{/*<Redirect to=`/${data.createPost.heading}` />*/}</div>;}
                                 if (error) return `Error!: ${error}`;
                                 const desc = !this.state.skipped.has(1) ?
                                     "<div class='ql-snow'><div class='ql-editor'>" + this.state.editorHtml + "</div></div>" :
@@ -273,4 +276,4 @@ QuestionModel.propTypes = {
     classes: PropTypes.object,
 };
 
-export default withStyles(styles)(QuestionModel);
+export default withRouter(withStyles(styles)(QuestionModel));

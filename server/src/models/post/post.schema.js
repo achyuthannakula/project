@@ -17,7 +17,7 @@ export const postTypeDefs = `
         votes:[Vote]
     }
     extend type Query{
-        posts(id :ID) : [Post]
+        posts(id :ID, sort: String!) : [Post]
         post(id :ID) : Post
     }
     input PostInput{
@@ -51,9 +51,10 @@ export const postResolver = {
                 .populate('comments')
                 .then(data => {return data;});
         },
-        posts: async (_, { id }, { user }) => {
+        posts: async (_, { id, sort }, { user }) => {
             //console.log(context);
             user = await user;
+            const sortType = sort === "votes" ? {voteValue: -1, createdDate: -1} : {createdDate: -1};
             //console.log("---",u,"---");
             if (id)
                 return Post.find({}).populate('userId')
@@ -78,7 +79,7 @@ export const postResolver = {
                         },
                         options: {limit : 1}
                     })
-                    .sort({'createdDate': -1})
+                    .sort(sortType)
                     .limit(10)
                     .then(data => {return data;});
             else

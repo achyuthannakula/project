@@ -13,6 +13,9 @@ import TDn from "@material-ui/icons/ThumbDown";
 import Create from "@material-ui/icons/Create";
 import Tooltip from "@material-ui/core/Tooltip";
 import Avatar from "@material-ui/core/Avatar";
+import { Mutation } from "react-apollo";
+import { gql } from "apollo-boost";
+import Spinner from "./spinner";
 
 const styles = {
     card: {
@@ -77,10 +80,30 @@ class SimpleCard extends Component{
         super(props);
         const voteObj = this.props.data.votes;
         this.state = {
-            voteId: voteObj.length > 0 ? voteObj[0].id : null,
-            userVoteValue: voteObj.length > 0 ? voteObj[0].value : 0
+            voteId: voteObj ? (voteObj.length > 0 ? voteObj[0].id : null) : null,
+            userVoteValue: voteObj ? (voteObj.length > 0 ? voteObj[0].value : 0) : 0
         }
     }
+
+    handleOnClickMutation = (fun, val) => {
+        const userInfo = this.props.userInfo;
+        const { voteId, userVoteValue } = this.state;
+        console.log("enter");
+        if (userInfo === null) {
+            alert("you need to login");
+            return;
+        }
+        fun({
+            variables: {
+                data: {
+                    value: userVoteValue !== null ? userVoteValue === val ? 0 : val : val,
+                    userId: userInfo.id,
+                    to: "post",
+                    toId: this.props.data.id
+                }
+            }
+        });
+    };
 
     format = (date) => {
         const monthNames = [
@@ -117,6 +140,8 @@ class SimpleCard extends Component{
                     return diff + " hr's ago";
             }
             diff = (ourDateObject.h - dateObject.h) * 60 - dateObject.m + ourDateObject.m;
+            if(diff > 60)
+                return (ourDateObject.h - dateObject.h) + " hr's ago";
             return diff + " min's ago";
         }
     };
@@ -125,7 +150,7 @@ class SimpleCard extends Component{
     render(){
         console.log(this.state);
         const { data, classes } = this.props;
-        const { heading, voteValue, createdDate, userId , answers} = data;
+        const { id, heading, voteValue, createdDate, userId , answers} = data;
 
         const { voteId, userVoteValue } = this.state;
         //const description = data.description.replace(/<\/?[^>]+>/ig, " ").trim();
@@ -175,15 +200,104 @@ class SimpleCard extends Component{
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Thubms Up">
-                            <IconButton color={userVoteValue > 0 ? "primary" : "default"}>
-                                <TUp/>
-                            </IconButton>
+                            <Mutation
+                                mutation={gql`
+                                    mutation CreateOrUpdateVote($data: VoteInput!) {
+                                        createOrUpdateVote(data: $data) {
+                                            id
+                                            value
+                                        }
+                                    }
+                                `}
+                                onCompleted={({ createOrUpdateVote }) => {
+                                    console.log("the end", createOrUpdateVote);
+                                    this.setState({
+                                        voteId: createOrUpdateVote.id,
+                                        userVoteValue: createOrUpdateVote.value
+                                    });
+                                }}
+                            >
+                                {(createOrUpdateVote, { loading, error, data }) => {
+                                    if (loading) return <Spinner />;
+                                    if (data) {
+                                        console.log("success data-", data);
+
+                                        return (
+                                            <IconButton
+                                                color={userVoteValue > 0 ? "primary" : "default"}
+                                                onClick={() =>
+                                                    this.handleOnClickMutation(createOrUpdateVote, 1)
+                                                }
+                                            >
+                                                <TUp />
+                                            </IconButton>
+                                        );
+                                    }
+                                    if (error) return `Error!: ${error}`;
+
+                                    return (
+                                        <IconButton
+                                            color={userVoteValue > 0 ? "primary" : "default"}
+                                            onClick={() =>
+                                                this.handleOnClickMutation(createOrUpdateVote, 1)
+                                            }
+                                        >
+                                            <TUp />
+                                        </IconButton>
+                                    );
+                                }}
+                            </Mutation>
                         </Tooltip>
-                        <Typography>{voteValue}</Typography>
-                        <Tooltip title="Thumbs Down" color={userVoteValue < 0 ? "primary" : "default"}>
-                            <IconButton>
-                                <TDn/>
-                            </IconButton>
+
+                        <Typography>{userVoteValue}</Typography>
+                        <Tooltip title="Thumbs Down">
+                            <Mutation
+                                mutation={gql`
+                                    mutation CreateOrUpdateVote($data: VoteInput!) {
+                                        createOrUpdateVote(data: $data) {
+                                            id
+                                            value
+                                        }
+                                    }
+                                `}
+                                onCompleted={({ createOrUpdateVote }) => {
+                                    console.log("the end", createOrUpdateVote);
+                                    this.setState({
+                                        voteId: createOrUpdateVote.id,
+                                        userVoteValue: createOrUpdateVote.value
+                                    });
+                                }}
+                            >
+                                {(createOrUpdateVote, { loading, error, data }) => {
+                                    if (loading) return <Spinner />;
+                                    if (data) {
+                                        console.log("success data-", data);
+
+                                        return (
+                                            <IconButton
+                                                color={userVoteValue < 0 ? "primary" : "default"}
+                                                onClick={() =>
+                                                    this.handleOnClickMutation(createOrUpdateVote, -1)
+                                                }
+                                            >
+                                                <TDn />
+                                            </IconButton>
+                                        );
+                                    }
+                                    if (error) return `Error!: ${error}`;
+
+                                    return (
+                                        <IconButton
+                                            color={userVoteValue < 0 ? "primary" : "default"}
+                                            onClick={() =>
+                                                this.handleOnClickMutation(createOrUpdateVote, -1)
+                                            }
+                                        >
+                                            <TDn />
+                                        </IconButton>
+                                    );
+                                }}
+                            </Mutation>
                         </Tooltip>
                     </div>
 

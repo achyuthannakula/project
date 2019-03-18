@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import {withRouter} from 'react-router-dom';
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -56,7 +57,7 @@ const styles = {
          const anchorEl = this.state.anchorEl;
          const  open  = Boolean(anchorEl);
          const userInfo = this.props.userInfo;
-         console.log("in nav");
+         console.log("in nav", this.props);
          return (
              <div>
                  <CssBaseline/>
@@ -116,4 +117,4 @@ SimpleAppBar.propTypes = {
     classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(SimpleAppBar);
+export default withRouter(withStyles(styles)(SimpleAppBar));

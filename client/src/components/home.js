@@ -80,7 +80,7 @@ class Home extends Component{
         super(props);
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         this.state = {
-            sort: 10,
+            sort: "new",
             userInfo: userInfo
         };
     }
@@ -109,9 +109,9 @@ class Home extends Component{
                                     onChange={this.handleSortChange}
                                     input={<BootstrapInput name="age" id="age-customized-select" />}
                                 >
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                    <MenuItem value={20}>Twenty</MenuItem>
-                                    <MenuItem value={30}>Thirty</MenuItem>
+                                    <MenuItem value={"new"}>newer</MenuItem>
+                                    <MenuItem value={"votes"}>votes</MenuItem>
+                                    <MenuItem value={"hot"} disabled>hot</MenuItem>
                                 </Select>
                             </FormControl>
                         </div>
@@ -119,8 +119,8 @@ class Home extends Component{
                     <div style={{marginTop: "1em"}}>
                         <Query
                         query={gql`
-                        query Posts($id : ID){
-                            posts(id: $id){
+                        query Posts($id: ID, $sort: String!){
+                            posts(id: $id, sort: $sort){
                                 id
                                 heading
                                 description
@@ -144,7 +144,7 @@ class Home extends Component{
                                 voteValue
                             }
                         }
-                        `} variables={{id : userInfo ? userInfo.id : null}}>
+                        `} variables={{id : userInfo ? userInfo.id : null, sort: this.state.sort}}>
                             {({ loading, error, data }) => {
                                 if (loading) return <Spinner />;
                                 if (error) return <p>Error :(</p>;
@@ -153,12 +153,6 @@ class Home extends Component{
                                     <Card key={data.id} data={data} userInfo={userInfo}/>
                                 ));
                             }}
-                            {/*<div style={{marginTop: "1em"}}>
-                                <Card />
-                                <Card />
-                                <Card />
-                                <Card />
-                            </div>*/}
                         </Query>
                     </div>
                 </Grid>
