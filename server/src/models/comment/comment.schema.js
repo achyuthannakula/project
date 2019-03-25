@@ -1,11 +1,12 @@
-import Comment from './comment.model';
+import Comment from "./comment.model";
+import { AuthenticationError } from "apollo-server";
 
 export const commentTypeDefs = `
     type Comment{
         id: ID!
         comment: String!
         date: String!
-        userId: String!
+        userId: User!
         to: String!
         postId: String
         answerId: String
@@ -22,9 +23,12 @@ export const commentTypeDefs = `
 `;
 
 export const commentResolver = {
-    Mutation: {
-        createComment: (_, { data }) => {
-            return  Comment.create(data).then( out => out, error => error);
-        }
+  Mutation: {
+    createComment: (_, { data }, { user }) => {
+      if (!user) throw new AuthenticationError("You must be logged in");
+      return Comment.create(data).then(data => {
+        return Comment.populate(data, { path: "userId" });
+      });
     }
+  }
 };

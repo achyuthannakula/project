@@ -5,315 +5,213 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
-import ShareIcon from "@material-ui/icons/Share";
-import TUp from "@material-ui/icons/ThumbUp";
-import TDn from "@material-ui/icons/ThumbDown";
 import Create from "@material-ui/icons/Create";
 import Tooltip from "@material-ui/core/Tooltip";
 import Avatar from "@material-ui/core/Avatar";
-import { Mutation } from "react-apollo";
-import { gql } from "apollo-boost";
-import Spinner from "./spinner";
+import SocialShare from "./socialShare";
+import formatDate from "./Date";
+import Vote from "./vote";
+import Auth from "../Auth";
 
 const styles = {
-    card: {
-        marginBottom: "1em"
+  card: {
+    marginBottom: "1em"
+  },
+  author: {
+    display: "flex",
+    margin: "10px 0px",
+    alignItems: "center"
+  },
+  avatarDiv: {
+    display: "flex",
+    alignItems: "flex-initial",
+    margin: "10px",
+    flexDirection: "column"
+  },
+  time: {
+    color: "rgb(120, 120, 120)"
+  },
+  bullet: {
+    display: "inline-block",
+    margin: "0 5px",
+    transform: "scale(0.8)"
+  },
+  title: {
+    fontSize: 14
+  },
+  span: {
+    float: "right"
+  },
+  noans: {
+    display: "flex",
+    color: "rgb(120, 120, 120)"
+  },
+  ans: {
+    display: "-webkit-box",
+    "-webkit-line-clamp": 3,
+    "-webkit-box-orient": "vertical",
+    overflow: "hidden"
+  },
+  anchor: {
+    "&:link": {
+      textDecoration: "none"
     },
-    author: {
-        display: "flex",
-        margin: "10px 0px",
-        alignItems: "center"
+    "&:hover": {
+      color: "inherit",
+      textDecoration: "underline"
     },
-    avatarDiv: {
-        display: "flex",
-        alignItems: "flex-initial",
-        margin: "10px",
-        flexDirection: "column"
-    },
-    time: {
-        color: "rgb(120, 120, 120)"
-    },
-    bullet: {
-        display: "inline-block",
-        margin: "0 5px",
-        transform: "scale(0.8)"
-    },
-    title: {
-        fontSize: 14
-    },
-    span: {
-        float: "right"
-    },
-    noans: {
-        display: "flex",
-        color: "rgb(120, 120, 120)"
-    },
-    ans: {
-        display: "-webkit-box",
-        "-webkit-line-clamp": 3,
-        "-webkit-box-orient": "vertical",
-        overflow: "hidden"
-    },
-    anchor: {
-        "&:link": {
-            textDecoration: "none"
-        },
-        "&:hover": {
-            color: "inherit",
-            textDecoration: "underline"
-        },
-        "&:visited": {}
-    },
-    actionButton: {
-        alignItems: "center",
-        flexGrow: 1,
-        flexWrap: "wrap",
-        display: "flex"
-    }
+    "&:visited": {}
+  },
+  actionButton: {
+    alignItems: "center",
+    flexGrow: 1,
+    flexWrap: "wrap",
+    display: "flex"
+  }
 };
 
-class SimpleCard extends Component{
-
-    constructor(props){
-        super(props);
-        const voteObj = this.props.data.votes;
-        this.state = {
-            voteId: voteObj ? (voteObj.length > 0 ? voteObj[0].id : null) : null,
-            userVoteValue: voteObj ? (voteObj.length > 0 ? voteObj[0].value : 0) : 0
-        }
-    }
-
-    handleOnClickMutation = (fun, val) => {
-        const userInfo = this.props.userInfo;
-        const { voteId, userVoteValue } = this.state;
-        console.log("enter");
-        if (userInfo === null) {
-            alert("you need to login");
-            return;
-        }
-        fun({
-            variables: {
-                data: {
-                    value: userVoteValue !== null ? userVoteValue === val ? 0 : val : val,
-                    userId: userInfo.id,
-                    to: "post",
-                    toId: this.props.data.id
-                }
-            }
-        });
+class SimpleCard extends Component {
+  constructor(props) {
+    super(props);
+    const voteObj = this.props.data.votes;
+    this.state = {
+      voteId: voteObj ? (voteObj.length > 0 ? voteObj[0].id : null) : null,
+      userVoteValue: voteObj ? (voteObj.length > 0 ? voteObj[0].value : 0) : 0
     };
+  }
 
-    format = (date) => {
-        const monthNames = [
-        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-        ];
-        date = new Date(parseInt(date));
-        const ourDate = new Date();
-        const dateObject = {
-            M: date.getMonth(),
-            d: date.getDate(),
-            h: date.getHours(),
-            m: date.getMinutes(),
-            y: date.getFullYear()
-        };
-        const ourDateObject = {
-            M: ourDate.getMonth(),
-            d: ourDate.getDate(),
-            h: ourDate.getHours(),
-            m: ourDate.getMinutes(),
-            y: ourDate.getFullYear()
-        };
-        console.log(date,"-",ourDate,dateObject,ourDateObject);
-        if (dateObject.y !== ourDateObject.y)
-            return monthNames[dateObject.M] +" "+ dateObject.y;
-        else if (dateObject.M !== ourDateObject.M)
-            return monthNames[dateObject.M] +" "+ dateObject.d;
-        else {
-            let diff = 0;
-            if (dateObject.d !== ourDateObject.d) {
-                diff = (ourDateObject.d - dateObject.d) * 24 - dateObject.h + ourDateObject.h;
-                if (diff >= 24)
-                    return dateObject.d +", "+ monthNames[dateObject.M];
-                else if(diff !== 0)
-                    return diff + " hr's ago";
-            }
-            diff = (ourDateObject.h - dateObject.h) * 60 - dateObject.m + ourDateObject.m;
-            if(diff > 60)
-                return (ourDateObject.h - dateObject.h) + " hr's ago";
-            return diff + " min's ago";
+  handleCreateClick = () => {
+    if (!Auth.isAuthenticated()) {
+      alert("You need to Login to Answer");
+      return;
+    } else
+      this.props.history.push({
+        pathname: "/" + this.props.data.id,
+        state: {
+          showEditor: true
         }
-    };
+      });
+  };
 
-
-    render(){
-        console.log(this.state);
-        const { data, classes } = this.props;
-        const { id, heading, voteValue, createdDate, userId , answers} = data;
-
-        const { voteId, userVoteValue } = this.state;
-        //const description = data.description.replace(/<\/?[^>]+>/ig, " ").trim();
-        const ansCount = answers.length;
-        //const bull = <span className={classes.bullet}>•</span>;
-
-
-        return (
-            <Card className={classes.card}>
-                <CardContent>
-                    <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                        gutterBottom
-                    >
-                        Question
-                    </Typography>
-
-                    <Link to="./" className={classes.anchor}>
-                        <Typography variant="h6" component="h2" gutterBottom>
-                            {heading}
-                        </Typography>
-                    </Link>
-
-                    {ansCount === 0 ?
-                        <Typography className={classes.noans}>
-                            No answer yet<span className={classes.bullet}>·</span>
-                            <Typography className={classes.time}>{this.format(createdDate)}</Typography>
-                        </Typography> :
-                        (<div>
-                            <div className={classes.author}>
-                                <Avatar onClick={this.handleAvatarClick} src = {answers[0].userId.profilePicture ? answers[0].userId.profilePicture : '/nopic.jpg'}/>
-                                <div className={classes.avatarDiv}>
-                                    <Typography>{answers[0].userId.name}</Typography>
-                                    <Typography className={classes.time}>{this.format(answers[0].createdDate)}</Typography>
-                                </div>
-                            </div>
-                            <Typography className={classes.ans}>{answers[0].answer.replace(/<\/?[^>]+>/ig, " ").trim()}</Typography>
-                        </div>)
-                    }
-                </CardContent>
-                <CardActions>
-                    <div className={classes.actionButton}>
-                        <Tooltip title="Answer">
-                            <IconButton>
-                                <Create />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Thubms Up">
-                            <Mutation
-                                mutation={gql`
-                                    mutation CreateOrUpdateVote($data: VoteInput!) {
-                                        createOrUpdateVote(data: $data) {
-                                            id
-                                            value
-                                        }
-                                    }
-                                `}
-                                onCompleted={({ createOrUpdateVote }) => {
-                                    console.log("the end", createOrUpdateVote);
-                                    this.setState({
-                                        voteId: createOrUpdateVote.id,
-                                        userVoteValue: createOrUpdateVote.value
-                                    });
-                                }}
-                            >
-                                {(createOrUpdateVote, { loading, error, data }) => {
-                                    if (loading) return <Spinner />;
-                                    if (data) {
-                                        console.log("success data-", data);
-
-                                        return (
-                                            <IconButton
-                                                color={userVoteValue > 0 ? "primary" : "default"}
-                                                onClick={() =>
-                                                    this.handleOnClickMutation(createOrUpdateVote, 1)
-                                                }
-                                            >
-                                                <TUp />
-                                            </IconButton>
-                                        );
-                                    }
-                                    if (error) return `Error!: ${error}`;
-
-                                    return (
-                                        <IconButton
-                                            color={userVoteValue > 0 ? "primary" : "default"}
-                                            onClick={() =>
-                                                this.handleOnClickMutation(createOrUpdateVote, 1)
-                                            }
-                                        >
-                                            <TUp />
-                                        </IconButton>
-                                    );
-                                }}
-                            </Mutation>
-                        </Tooltip>
-
-                        <Typography>{userVoteValue}</Typography>
-                        <Tooltip title="Thumbs Down">
-                            <Mutation
-                                mutation={gql`
-                                    mutation CreateOrUpdateVote($data: VoteInput!) {
-                                        createOrUpdateVote(data: $data) {
-                                            id
-                                            value
-                                        }
-                                    }
-                                `}
-                                onCompleted={({ createOrUpdateVote }) => {
-                                    console.log("the end", createOrUpdateVote);
-                                    this.setState({
-                                        voteId: createOrUpdateVote.id,
-                                        userVoteValue: createOrUpdateVote.value
-                                    });
-                                }}
-                            >
-                                {(createOrUpdateVote, { loading, error, data }) => {
-                                    if (loading) return <Spinner />;
-                                    if (data) {
-                                        console.log("success data-", data);
-
-                                        return (
-                                            <IconButton
-                                                color={userVoteValue < 0 ? "primary" : "default"}
-                                                onClick={() =>
-                                                    this.handleOnClickMutation(createOrUpdateVote, -1)
-                                                }
-                                            >
-                                                <TDn />
-                                            </IconButton>
-                                        );
-                                    }
-                                    if (error) return `Error!: ${error}`;
-
-                                    return (
-                                        <IconButton
-                                            color={userVoteValue < 0 ? "primary" : "default"}
-                                            onClick={() =>
-                                                this.handleOnClickMutation(createOrUpdateVote, -1)
-                                            }
-                                        >
-                                            <TDn />
-                                        </IconButton>
-                                    );
-                                }}
-                            </Mutation>
-                        </Tooltip>
-                    </div>
-
-                    <IconButton>
-                        <Tooltip title="Share">
-                            <ShareIcon />
-                        </Tooltip>
-                    </IconButton>
-                </CardActions>
-            </Card>
-        );
+  handleOnClickMutation = (fun, val) => {
+    const userInfo = this.props.userInfo;
+    const { voteId, userVoteValue } = this.state;
+    console.log("enter");
+    if (userInfo === null) {
+      alert("you need to login");
+      return;
     }
+    fun({
+      variables: {
+        data: {
+          value:
+            userVoteValue !== null ? (userVoteValue === val ? 0 : val) : val,
+          userId: userInfo.id,
+          to: "post",
+          toId: this.props.data.id
+        }
+      }
+    });
+  };
+
+  render() {
+    console.log(this.state);
+    console.log("answer props", this.props);
+    const { data, classes, userInfo } = this.props;
+    const {
+      id,
+      heading,
+      voteValue,
+      createdDate,
+      userId,
+      answers,
+      votes
+    } = data;
+    const { voteId, userVoteValue } = this.state;
+    const voteShowValue =
+      -(votes ? (votes.length > 0 ? votes[0].value : 0) : 0) +
+      voteValue +
+      userVoteValue;
+    //const description = data.description.replace(/<\/?[^>]+>/ig, " ").trim();
+    const ansCount = answers.length;
+    //const bull = <span className={classes.bullet}>â¢</span>;
+
+    return (
+      <Card className={classes.card}>
+        <CardContent>
+          <Typography
+            className={classes.title}
+            color="textSecondary"
+            gutterBottom
+          >
+            Question
+          </Typography>
+
+          <Link to={`/${id}`} className={classes.anchor}>
+            <Typography variant="h6" component="h2" gutterBottom>
+              {heading}
+            </Typography>
+          </Link>
+
+          {ansCount === 0 ? (
+            <Typography className={classes.noans}>
+              No answer yet<span className={classes.bullet}>Â·</span>
+              <Typography className={classes.time}>
+                {formatDate(createdDate)}
+              </Typography>
+            </Typography>
+          ) : (
+            <div>
+              <div className={classes.author}>
+                <Avatar
+                  src={
+                    answers[0].userId.profilePicture
+                      ? answers[0].userId.profilePicture
+                      : "/nopic.jpg"
+                  }
+                />
+                <div className={classes.avatarDiv}>
+                  <Typography>{answers[0].userId.name}</Typography>
+                  <Typography className={classes.time}>
+                    {formatDate(answers[0].createdDate)}
+                  </Typography>
+                </div>
+              </div>
+              <Typography className={classes.ans}>
+                {answers[0].answer.replace(/<\/?[^>]+>/gi, " ").trim()}
+              </Typography>
+            </div>
+          )}
+        </CardContent>
+        <CardActions>
+          <div className={classes.actionButton}>
+            <Tooltip title="Answer">
+              <IconButton onClick={this.handleCreateClick}>
+                <Create />
+              </IconButton>
+            </Tooltip>
+            <Vote
+              userInfo={userInfo}
+              votes={votes}
+              voteValue={voteValue}
+              id={id}
+              to={"post"}
+            />
+          </div>
+          <SocialShare
+            title={heading}
+            url={window.location.origin + "/" + id}
+          />
+        </CardActions>
+      </Card>
+    );
+  }
 }
 
 SimpleCard.propTypes = {
-    classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(SimpleCard);
+export default withRouter(withStyles(styles)(SimpleCard));
