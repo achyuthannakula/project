@@ -6,8 +6,10 @@ import Nav from "./components/nav";
 import Home from "./components/home";
 import Spinner from "./util/spinner";
 import { gql } from "apollo-boost";
-import ApolloConsumer from "react-apollo/ApolloConsumer";
+import { ApolloConsumer, withApollo } from "react-apollo";
 import Answer from "./components/answer";
+import Profile from "./components/profile";
+import ErrorPage from "./components/error";
 
 class App extends Component {
   constructor(props) {
@@ -54,6 +56,9 @@ class App extends Component {
           name
           email
           profilePicture
+          department
+          job
+          location
         }
       }
     `;
@@ -64,6 +69,7 @@ class App extends Component {
   };
 
   render() {
+    console.log(this, this.props.client);
     if (!this.state.tryingSilent && this.props.match.path !== "/callback") {
       Auth.isAuthenticated() &&
         this.state.userInfo == null &&
@@ -92,9 +98,11 @@ class App extends Component {
                   />
                 )}
               />
+              <Route path="/profile" component={Profile} />
               <Route path="/login" render={() => Auth.login()} />
-              <Route exact path="/:postId" component={Answer} />
-              <Route exact path="/:postId/:answerId" component={Answer} />
+              <Route exact path="/q/:postId" component={Answer} />
+              <Route exact path="/q/:postId/:answerId" component={Answer} />
+              <Route component={ErrorPage} />
             </Switch>
           </div>
         </div>
@@ -103,4 +111,4 @@ class App extends Component {
   }
 }
 
-export default withRouter(App);
+export default withRouter(withApollo(App));

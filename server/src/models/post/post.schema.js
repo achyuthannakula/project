@@ -1,4 +1,5 @@
 import Post from "./post.model";
+import Comment from "../comment/comment.model";
 import { AuthenticationError } from "apollo-server";
 import User from "../user/user.model";
 
@@ -12,13 +13,17 @@ export const postTypeDefs = `
         views: Int
         userId: User!
         comments: [Comment]
+        commentsCount: Int!
         answers: [Answer]
         voteValue: Int
         votes:[Vote]
     }
     extend type Query{
-        posts(userId :ID, sort: String!) : [Post]
-        post(postId :ID!, userId: ID, answerId: ID) : Post
+        postCount: Int
+        userPostsCount(id: ID!): Int!
+        postsById(id: ID!, paginationIndex: Int, noPostsInPage: Int): [Post]
+        posts(userId :ID, sort: String!, paginationIndex: Int, noPostsInPage: Int, cursorDate: String) : [Post]
+        post(postId :ID!, userId: ID, answerId: ID, noPostsInPage: Int) : Post
     }
     input PostInput{
         heading: String
@@ -27,14 +32,37 @@ export const postTypeDefs = `
     }
     extend type Mutation{
         createPost(data: PostInput!): Post
+        updatePost(email: String!, postId: ID!, question: String!, description: String) : Post
         incViews(id: String) : String
     }
 `;
 
 export const postResolver = {
+  Post: {
+    commentsCount(obj) {
+      return Comment.countDocuments({ postId: obj.id });
+    }
+  },
   Query: {
-    post: async (_, { postId, userId, answerId }, { user }) => {
+    postCount: () => {
+      return Post.estimatedDocumentCount();
+    },
+    userPostsCount: (_, { id }) => {
+      return Post.countDocuments({ userId: id });
+    },
+    postsById: (_, { id, paginationIndex, noPostsInPage }) => {
+      paginationIndex = paginationIndex ? paginationIndex : 1;
+      noPostsInPage = noPostsInPage ? noPostsInPage : 10;
+      console.log(paginationIndex, noPostsInPage);
+      return Post.find({ userId: id }, null, {
+        sort: { createdDate: -1 },
+        skip: paginationIndex >= 1 ? (paginationIndex - 1) * noPostsInPage : 0,
+        limit: noPostsInPage
+      });
+    },
+    post: async (_, { postId, userId, answerId, noPostsInPage }, { user }) => {
       const u = await user;
+      noPostsInPage = noPostsInPage ? noPostsInPage : 10;
 
       const votePopulate = [{ path: "userId" }];
       if (userId)
@@ -55,10 +83,14 @@ export const postResolver = {
         : null;
 
       return Post.findById(postId)
+        .populate("userId")
         .populate({
           path: "answers",
           ...matchObject,
-          options: { sort: { voteValue: -1, createdDate: -1 } },
+          options: {
+            sort: { voteValue: -1, createdDate: -1 },
+            limit: noPostsInPage
+          },
           populate: [
             ...votePopulate,
             {
@@ -88,8 +120,15 @@ export const postResolver = {
           return data;
         });
     },
-    posts: async (_, { userId, sort }, { user }) => {
+    posts: async (
+      _,
+      { userId, sort, paginationIndex, noPostsInPage, cursorDate },
+      { user }
+    ) => {
       //console.log(context);
+      cursorDate = cursorDate ? cursorDate : new Date().getTime();
+      paginationIndex = paginationIndex ? paginationIndex : 1;
+      noPostsInPage = noPostsInPage ? noPostsInPage : 10;
       user = await user;
       const sortType =
         sort === "votes"
@@ -105,8 +144,18 @@ export const postResolver = {
           },
           options: { limit: 1 }
         });
+
+      let searchObj = {};
+      let skip =
+        paginationIndex >= 1 ? (paginationIndex - 1) * noPostsInPage : 0;
+      if (sort === "new") {
+        searchObj = {
+          createdDate: { $lt: cursorDate }
+        };
+        skip = 0;
+      }
       //console.log("---",u,"---");
-      return Post.find({})
+      return Post.find(searchObj)
         .populate([
           ...votePopulate,
           {
@@ -138,12 +187,17 @@ export const postResolver = {
           }
         })
         .sort(sortType)
-        .limit(10)
+        .skip(skip)
+        .limit(noPostsInPage)
         .then(
-          data => {
-            return data;
+          doc => {
+            console.log(paginationIndex, noPostsInPage);
+            return doc;
           },
-          err => console.log(err)
+          err => {
+            console.log(err);
+            return err;
+          }
         );
     }
   },
@@ -156,6 +210,23 @@ export const postResolver = {
         },
         error => error
       );
+    },
+    updatePost: async (
+      _,
+      { email, postId, question, description },
+      { user }
+    ) => {
+      user = await user;
+      if (user.email === email)
+        return Post.findOneAndUpdate(
+          { _id: postId },
+          { heading: question, description },
+          { new: true }
+        );
+      else
+        throw new AuthenticationError(
+          "User don't have access to change this post"
+        );
     },
     incViews: (_, { id }) => {
       return Post.findByIdAndUpdate(id, { $inc: { views: 1 } }).then(

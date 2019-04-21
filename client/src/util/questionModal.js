@@ -282,7 +282,7 @@ class QuestionModel extends React.Component {
                     return (
                       <div>
                         --
-                        <Redirect to={`/${data.createPost.id}`} />
+                        <Redirect to={`/q/${data.createPost.id}`} />
                         {this.props.handleClose()}}
                       </div>
                     );

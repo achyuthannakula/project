@@ -25,7 +25,7 @@ class Callback extends Component {
           <Query
             query={gql`
               {
-                userUpdate {
+                userCreateOrUpdate {
                   username
                 }
               }
@@ -38,7 +38,10 @@ class Callback extends Component {
               console.log("props", this.props);
               this.props.onChangeUserData(data.user);
               return (
-                  <Spinner />
+                <div>
+                  "wsd"
+                  <Redirect to="/" />
+                </div> /*<Spinner />*/
               );
             }}
           </Query>

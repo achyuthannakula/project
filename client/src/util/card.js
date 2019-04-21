@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import { ApolloConsumer, withApollo } from "react-apollo";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -62,7 +63,8 @@ const styles = {
       color: "inherit",
       textDecoration: "underline"
     },
-    "&:visited": {}
+    "&:visited": {},
+    cursor: "pointer"
   },
   actionButton: {
     alignItems: "center",
@@ -88,7 +90,7 @@ class SimpleCard extends Component {
       return;
     } else
       this.props.history.push({
-        pathname: "/" + this.props.data.id,
+        pathname: "/q/" + this.props.data.id,
         state: {
           showEditor: true
         }
@@ -96,7 +98,7 @@ class SimpleCard extends Component {
   };
 
   handleOnClickMutation = (fun, val) => {
-    const userInfo = this.props.userInfo;
+    const { to, userInfo } = this.props;
     const { voteId, userVoteValue } = this.state;
     console.log("enter");
     if (userInfo === null) {
@@ -109,7 +111,7 @@ class SimpleCard extends Component {
           value:
             userVoteValue !== null ? (userVoteValue === val ? 0 : val) : val,
           userId: userInfo.id,
-          to: "post",
+          to: to,
           toId: this.props.data.id
         }
       }
@@ -117,9 +119,9 @@ class SimpleCard extends Component {
   };
 
   render() {
-    console.log(this.state);
-    console.log("answer props", this.props);
-    const { data, classes, userInfo } = this.props;
+    //console.log(this.state);
+    //console.log("answer props", this.props);
+    const { data, classes, userInfo, to } = this.props;
     const {
       id,
       heading,
@@ -149,7 +151,7 @@ class SimpleCard extends Component {
             Question
           </Typography>
 
-          <Link to={`/${id}`} className={classes.anchor}>
+          <Link to={`/q/${id}`} className={classes.anchor}>
             <Typography variant="h6" component="h2" gutterBottom>
               {heading}
             </Typography>
@@ -157,7 +159,7 @@ class SimpleCard extends Component {
 
           {ansCount === 0 ? (
             <Typography className={classes.noans}>
-              No answer yet<span className={classes.bullet}>Â·</span>
+              No answer yet<span className={classes.bullet}>·</span>
               <Typography className={classes.time}>
                 {formatDate(createdDate)}
               </Typography>
@@ -173,7 +175,26 @@ class SimpleCard extends Component {
                   }
                 />
                 <div className={classes.avatarDiv}>
-                  <Typography>{answers[0].userId.name}</Typography>
+                  <Typography
+                    onClick={() =>
+                      this.props.history.push({
+                        pathname: "/profile",
+                        state: { userId: answers[0].userId.id }
+                      })
+                    }
+                    className={classes.anchor}
+                  >
+                    {answers[0].userId.name}
+                  </Typography>
+                  {answers[0].userId.department && (
+                    <Typography className={classes.time}>
+                      {answers[0].userId.department +
+                        ", " +
+                        answers[0].userId.job +
+                        ", " +
+                        answers[0].userId.location}
+                    </Typography>
+                  )}
                   <Typography className={classes.time}>
                     {formatDate(answers[0].createdDate)}
                   </Typography>
@@ -197,12 +218,12 @@ class SimpleCard extends Component {
               votes={votes}
               voteValue={voteValue}
               id={id}
-              to={"post"}
+              to={to}
             />
           </div>
           <SocialShare
             title={heading}
-            url={window.location.origin + "/" + id}
+            url={window.location.origin + "/q/" + id}
           />
         </CardActions>
       </Card>
@@ -214,4 +235,4 @@ SimpleCard.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withRouter(withStyles(styles)(SimpleCard));
+export default withRouter(withApollo(withStyles(styles)(SimpleCard)));

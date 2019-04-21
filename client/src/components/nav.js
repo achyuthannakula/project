@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -26,6 +26,16 @@ const styles = {
   },
   avatar: {
     margin: "10px"
+  },
+  anchor: {
+    color: "inherit",
+    "&:link": {
+      textDecoration: "none"
+    },
+    "&:hover": {
+      color: "inherit"
+    },
+    "&:visited": {}
   }
 };
 
@@ -53,20 +63,20 @@ class SimpleAppBar extends Component {
 
   handleLogin = () => {
     console.log("beforelogin", this.props);
-    //Auth.login();
-    const win = window.open(
-        window.location.origin + "/login",
-        "popup",
-        "width=600,height=600,scrollbars=no,resizable=no"
+    Auth.login();
+    /*const win = window.open(
+      window.location.origin + "/login",
+      "popup",
+      "width=600,height=600,scrollbars=no,resizable=no"
     );
 
     const timer = setInterval(function() {
-      if(Auth.isAuthenticated()) {
+      if (Auth.isAuthenticated()) {
         clearInterval(timer);
         win.close();
         window.location.reload();
       }
-    }, 1000);
+    }, 1000);*/
   };
 
   render() {
@@ -81,7 +91,9 @@ class SimpleAppBar extends Component {
         <AppBar position="fixed">
           <Toolbar>
             <Typography className={classes.root} variant="h6" color="inherit">
-              Project
+              <Link to={`/`} className={classes.anchor}>
+                Project
+              </Link>
             </Typography>
             {Auth.isAuthenticated() && (
               <Button color="inherit" onClick={this.handleModelOpen}>
@@ -101,10 +113,7 @@ class SimpleAppBar extends Component {
             />
 
             {!Auth.isAuthenticated() ? (
-              <Button
-                color="inherit"
-                onClick={this.handleLogin}
-              >
+              <Button color="inherit" onClick={this.handleLogin}>
                 Login
               </Button>
             ) : (
@@ -133,7 +142,16 @@ class SimpleAppBar extends Component {
                   open={open}
                   onClose={this.handleMenuClose}
                 >
-                  <MenuItem>Profile</MenuItem>
+                  <MenuItem
+                    onClick={() =>
+                      this.props.history.push({
+                        pathname: "/profile",
+                        state: { userId: userInfo.id }
+                      })
+                    }
+                  >
+                    Profile
+                  </MenuItem>
                   <MenuItem onClick={() => Auth.logout(window.location.href)}>
                     Logout
                   </MenuItem>

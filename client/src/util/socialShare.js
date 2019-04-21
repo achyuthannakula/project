@@ -32,7 +32,6 @@ class SocialShare extends Component {
 
   render() {
     const { anchorEl } = this.state;
-    console.log(this.props);
 
     return (
       <>

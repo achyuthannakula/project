@@ -27,7 +27,11 @@ const styles = {
   },
   icon: {
     fontSize: 20,
+    margin: "auto",
     marginLeft: "5px"
+  },
+  flex: {
+    display: "flex"
   }
 };
 
@@ -94,11 +98,13 @@ class AnswerEditor extends Component {
             }
           `}
           variables={{ userId: userInfo.id, postId: postId }}
+          fetchPolicy={"cache-and-network"}
         >
           {({ data, loading, error }) => {
             if (loading) return <Spinner />;
             if (error) return <p>Error :(</p>;
             if (data) {
+              console.log("create answer", data);
               if (data.checkUserHasAnswer)
                 return (
                   <Typography variant="h6" align={"center"} gutterBottom>
@@ -139,7 +145,7 @@ class AnswerEditor extends Component {
                           {data && (
                             <>
                               <Redirect
-                                to={`/${postId}/${data.createAnswer.id}`}
+                                to={`/q/${postId}/${data.createAnswer.id}`}
                               />
                               {this.props.handleClose()}
                             </>
@@ -147,7 +153,7 @@ class AnswerEditor extends Component {
                           {loading ? (
                             "......"
                           ) : (
-                            <span>
+                            <span className={classes.flex}>
                               Submit
                               <SendIcon className={classes.icon} />
                             </span>
