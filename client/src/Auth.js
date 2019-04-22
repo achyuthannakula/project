@@ -6,6 +6,7 @@ class Auth {
             domain: "tachyon.auth0.com",
             clientID: "Z999dm2xolFnCiOUE913uNvIiMAq3sOv",
             redirectUri: "http://localhost:3000/callback",
+            //redirectUri: "https://tachyon98.herokuapp.com/callback",//https://tachyon98.herokuapp.com/callback
             audience: "https://tachyon.auth0.com/userinfo",
             responseType: "token id_token",
             scope: "openid profile email"
@@ -56,7 +57,10 @@ class Auth {
     logout(location) {
         localStorage.setItem(this.authFlag, JSON.stringify(false));
         localStorage.setItem("userInfo", null);
+        if(location === "/profile")
+            location="/";
         this.auth0.logout({
+            //returnTo: "https://tachyon98.herokuapp.com/?redirect="+location,//https://tachyon98.herokuapp.com/
             returnTo: "http://localhost:3000/?redirect="+location,
             clientID: "Z999dm2xolFnCiOUE913uNvIiMAq3sOv"
         });

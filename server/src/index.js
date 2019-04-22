@@ -64,7 +64,9 @@ const server = new ApolloServer({
       //console.log("else");
       return null;
     }
-  }
+  },
+  introspection: true,
+  playground: true
 });
 
 server.listen({ port: process.env.PORT || 5000, path: "/graphql" }).then(({ url }) => {

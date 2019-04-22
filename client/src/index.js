@@ -9,6 +9,7 @@ import {ApolloProvider} from "react-apollo";
 import auth from "./Auth";
 
 const client = new ApolloClient({
+    //uri: "https://forum-he.herokuapp.com/",//https://forum-he.herokuapp.com/
     uri: "http://localhost:5000/",
     request: operation => {
         operation.setContext(context => ({
