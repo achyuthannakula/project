@@ -97,6 +97,7 @@ const answerStyles = {
 class Answer extends Component {
   constructor(props) {
     super(props);
+    console.log(localStorage.getItem("userInfo"));
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     this.state = {
       commentOpen: false,
@@ -567,6 +568,7 @@ class Answer extends Component {
                     postId={post.id}
                     key={x.id}
                     answer={x}
+                    fetchMore={fetchMore}
                   />
                 ))}
                 <div

@@ -83,7 +83,7 @@ export const postResolver = {
         : null;
 
       return Post.findById(postId)
-        .populate("userId")
+        .populate(votePopulate)
         .populate({
           path: "answers",
           ...matchObject,
@@ -92,7 +92,6 @@ export const postResolver = {
             limit: noPostsInPage
           },
           populate: [
-            ...votePopulate,
             {
               path: "comments",
               options: {

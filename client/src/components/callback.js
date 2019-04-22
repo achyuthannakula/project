@@ -11,12 +11,16 @@ class Callback extends Component {
     update: false
   };
   async componentDidMount() {
-    await auth.handleAuthentication();
+    console.log("going Inside");
+    await auth.handleAuthentication()/*.catch(error => {
+      console.log(error);
+    });*/
+    console.log("success");
     this.setState({ update: true });
   }
 
   render() {
-    console.log("callback in render", this.props);
+    console.log("callback in render", this.state.update, this.props);
     if (this.state.update) {
       console.log("callback in if", this.props);
       return (
@@ -31,16 +35,16 @@ class Callback extends Component {
               }
             `}
           >
-            {({ loading, error, data }) => {
-              if (loading) return null;
+            {({ loading, error, data, networkStatus }) => {
+              if (loading) {console.log("loading")}
               if (error) return `Error!: ${error}`;
-              console.log("in caller", data.user);
+              data && console.log("in caller", data.user);
               console.log("props", this.props);
-              this.props.onChangeUserData(data.user);
+              data && this.props.onChangeUserData(data.user);
+              if(networkStatus === 1)
               return (
                 <div>
-                  "wsd"
-                  <Redirect to="/" />
+                  Done
                 </div> /*<Spinner />*/
               );
             }}

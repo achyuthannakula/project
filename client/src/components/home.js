@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import  queryString from 'query-string';
 import { withStyles } from "@material-ui/core/es/styles";
 import Grid from "@material-ui/core/Grid";
 import { Typography } from "@material-ui/core";
@@ -104,6 +105,13 @@ class Home extends Component {
     this.noPostsInPage = 10;
     this.paginationIndex = 1;
     this.loadMore = true;
+    const search = this.props.location.search;
+    if(search && search.length>0){
+      const parsed = queryString.parse(this.props.location.search);
+      console.log("==++",this.props);
+      if(parsed.redirect)
+        this.props.history.push(parsed.redirect);
+    }
   }
 
   handleSortChange = event => {
@@ -306,4 +314,4 @@ class Home extends Component {
   }
 }
 
-export default withStyles(styles)(Home);
+export default withStyles(styles)(withRouter(Home));

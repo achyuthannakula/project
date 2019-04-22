@@ -5,7 +5,7 @@ class Auth {
         this.auth0 = new auth0.WebAuth({
             domain: "tachyon.auth0.com",
             clientID: "Z999dm2xolFnCiOUE913uNvIiMAq3sOv",
-            redirectUri: "https://localhost:3000/callback",
+            redirectUri: "http://localhost:3000/callback",
             audience: "https://tachyon.auth0.com/userinfo",
             responseType: "token id_token",
             scope: "openid profile email"
@@ -30,8 +30,12 @@ class Auth {
     handleAuthentication() {
         return new Promise((resolve, reject) => {
             this.auth0.parseHash(async (err, authResult) => {
-                if (err) return reject(err);
+                if (err) {
+                    console.log(err);
+                    return reject(err);
+                }
                 if (!authResult || !authResult.idToken) {
+                    console.log(err);
                     return reject(err);
                 }
                 console.log("auth result", authResult);
@@ -46,13 +50,14 @@ class Auth {
         // set the time that the id token will expire at
         this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
         localStorage.setItem(this.authFlag, JSON.stringify(true));
+        console.log("saved");
     }
 
     logout(location) {
         localStorage.setItem(this.authFlag, JSON.stringify(false));
         localStorage.setItem("userInfo", null);
         this.auth0.logout({
-            returnTo: location,
+            returnTo: "http://localhost:3000/?redirect="+location,
             clientID: "Z999dm2xolFnCiOUE913uNvIiMAq3sOv"
         });
     }
@@ -60,13 +65,13 @@ class Auth {
     silentAuth() {
         if (this.isAuthenticated()) {
             return new Promise((resolve, reject) => {
-                this.auth0.checkSession({}, (err, authResult) => {
+                this.auth0.checkSession({}, async (err, authResult) => {
                     if (err) {
                         localStorage.removeItem(this.authFlag);
                         return reject(err);
                     }
                     console.log("in silent auth", authResult);
-                    this.setSession(authResult);
+                    await this.setSession(authResult);
                     resolve();
                 });
             });

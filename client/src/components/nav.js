@@ -63,20 +63,23 @@ class SimpleAppBar extends Component {
 
   handleLogin = () => {
     console.log("beforelogin", this.props);
-    Auth.login();
-    /*const win = window.open(
+    //Auth.login();
+    const win = window.open(
       window.location.origin + "/login",
       "popup",
       "width=600,height=600,scrollbars=no,resizable=no"
     );
 
-    const timer = setInterval(function() {
+    const timer = setInterval(() => {
       if (Auth.isAuthenticated()) {
         clearInterval(timer);
         win.close();
         window.location.reload();
+        //console.log("@$%@%$$%$#");
+        //this.forceUpdate();
+        //this.props.history.replace(this.props.location.path);
       }
-    }, 1000);*/
+    }, 1000);
   };
 
   render() {
@@ -152,7 +155,7 @@ class SimpleAppBar extends Component {
                   >
                     Profile
                   </MenuItem>
-                  <MenuItem onClick={() => Auth.logout(window.location.href)}>
+                  <MenuItem onClick={() => Auth.logout(window.location.pathname)}>
                     Logout
                   </MenuItem>
                 </Menu>

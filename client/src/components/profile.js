@@ -203,7 +203,7 @@ class Profile extends Component {
   fetchMore = (fetchMore, type) => () => {
     const { userInfo } = this.state;
     console.log(this.paginationIndex);
-    this.paginationIndex < 1 ? 1 : (this.paginationIndex += 1);
+    this.paginationIndex = this.paginationIndex < 1 ? 1 : (this.paginationIndex + 1);
 
     //type === 0 => answers
     //type === 1 => questions
@@ -561,6 +561,7 @@ class Profile extends Component {
                             fetchMore,
                             networkStatus
                           }) => {
+                            console.log(networkStatus);
                             if (networkStatus === 1) {
                               console.log("first loading");
                               prevCount = -1;
@@ -570,7 +571,9 @@ class Profile extends Component {
                               console.log(error);
                               return <p>Error :(</p>;
                             }
-                            console.log("after loading");
+                            if(!data.answers)
+                              return <Spinner />;
+                            console.log("after loading", data);
                             if (data.answers.length === 0)
                               return <p>No Answers</p>;
                             let hasNext = false;
@@ -674,6 +677,8 @@ class Profile extends Component {
                               return <p>Error :(</p>;
                             }
                             console.log(data);
+                            if(!data.postsById)
+                              return <Spinner />;
 
                             if (data.postsById.length === 0)
                               return <p>No Questions</p>;

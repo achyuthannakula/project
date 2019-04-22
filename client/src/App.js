@@ -30,6 +30,12 @@ class App extends Component {
     try {
       await Auth.silentAuth();
       console.log("change in try");
+      console.log("in check local state");
+      await Auth.isAuthenticated() &&
+      await this.state.userInfo == null &&
+      await this.updateUser();
+      !Auth.isAuthenticated() && localStorage.setItem("userInfo", null);
+      console.log("exiting local state");
       this.setState({ tryingSilent: false });
       //this.forceUpdate();
     } catch (err) {
@@ -71,42 +77,46 @@ class App extends Component {
   render() {
     console.log(this, this.props.client);
     if (!this.state.tryingSilent && this.props.match.path !== "/callback") {
+      console.log("in check local state");
       Auth.isAuthenticated() &&
         this.state.userInfo == null &&
         this.updateUser();
       !Auth.isAuthenticated() && localStorage.setItem("userInfo", null);
+      console.log("exiting local state");
     }
 
     console.log("in render" + this.state.tryingSilent);
     const userInfo = this.state.userInfo;
     /*Auth.isAuthenticated() && this.updateUser();*/
 
-    if (!this.state.tryingSilent)
+    if (!this.state.tryingSilent) {
+      console.log("main return-", Auth.isAuthenticated(), localStorage.getItem("userInfo"));
       return (
-        <div>
-          <Nav userInfo={userInfo} />
-          <div style={{ margin: "80px 20px 20px 20px" }}>
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route
-                exact
-                path="/callback"
-                render={props => (
-                  <Callback
-                    {...props}
-                    onChangeUserData={this.onChangeUserData}
-                  />
-                )}
-              />
-              <Route path="/profile" component={Profile} />
-              <Route path="/login" render={() => Auth.login()} />
-              <Route exact path="/q/:postId" component={Answer} />
-              <Route exact path="/q/:postId/:answerId" component={Answer} />
-              <Route component={ErrorPage} />
-            </Switch>
+          <div>
+            <Nav userInfo={userInfo}/>
+            <div style={{margin: "80px 20px 20px 20px"}}>
+              <Switch>
+                <Route exact path="/" component={Home}/>
+                <Route
+                    exact
+                    path="/callback"
+                    render={props => (
+                        <Callback
+                            {...props}
+                            onChangeUserData={this.onChangeUserData}
+                        />
+                    )}
+                />
+                <Route path="/profile" component={Profile}/>
+                <Route path="/login" render={() => Auth.login()}/>
+                <Route exact path="/q/:postId" component={Answer}/>
+                <Route exact path="/q/:postId/:answerId" component={Answer}/>
+                <Route component={ErrorPage}/>
+              </Switch>
+            </div>
           </div>
-        </div>
       );
+    }
     return <Spinner />;
   }
 }
