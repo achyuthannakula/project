@@ -7,9 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir dist",
     "serve": "node dist/index.js",
-    "start_m": "PORT=5000 nodemon --exec babel-node src/index.js",
+    "start": "nodemon --exec babel-node src/index.js",
     "start3": "babel-node --presets env src/index.js",
-    "start": "npm run build && npm run serve"
+    "start_m": "npm run build && npm run serve"
   },
   "author": "AchyuthChandra Annakula",
   "license": "ISC",

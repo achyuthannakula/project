@@ -40,7 +40,7 @@ class Callback extends Component {
               if (error) return `Error!: ${error}`;
               data && console.log("in caller", data.user);
               console.log("props", this.props);
-              data && this.props.onChangeUserData(data.user);
+              data && localStorage.setItem("userInfo", JSON.stringify(data.user));
               if(networkStatus === 1)
               return (
                 <div>

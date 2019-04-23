@@ -1,5 +1,6 @@
 import Comment from "./comment.model";
-import { AuthenticationError } from "apollo-server";
+import User from "../user/user.model";
+import {AuthenticationError} from "apollo-server";
 
 export const commentTypeDefs = `
     type Comment{
@@ -26,23 +27,27 @@ export const commentTypeDefs = `
 `;
 
 export const commentResolver = {
-  Query: {
-    getMoreComments: (_, { type, id, cursor, limit }) => {
-      let field = "answerId";
-      if (type === "post") field = "postId";
-      limit = limit ? limit : 5;
-      return Comment.find({ [field]: id, date: { $lt: cursor } })
-        .sort({ date: -1 })
-        .populate("userId")
-        .limit(limit);
+    Comment: {
+        userId(obj) {
+            return User.findById(obj.userId).catch(error => console.log("error in user id in comment data:", error));
+        }
+    },
+    Query: {
+        getMoreComments: (_, {type, id, cursor, limit}) => {
+            let field = "answerId";
+            if (type === "post") field = "postId";
+            limit = limit ? limit : 5;
+            return Comment.find({[field]: id, date: {$lt: cursor}})
+                .sort({date: -1})
+                .limit(limit);
+        }
+    },
+    Mutation: {
+        createComment: (_, {data}, {user}) => {
+            if (!user) throw new AuthenticationError("You must be logged in");
+            return Comment.create(data);/*.then(data => {
+            return Comment.populate(data, { path: "userId" });
+          });*/
+        }
     }
-  },
-  Mutation: {
-    createComment: (_, { data }, { user }) => {
-      if (!user) throw new AuthenticationError("You must be logged in");
-      return Comment.create(data).then(data => {
-        return Comment.populate(data, { path: "userId" });
-      });
-    }
-  }
 };

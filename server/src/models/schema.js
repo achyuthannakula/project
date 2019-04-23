@@ -1,10 +1,10 @@
-import { makeExecutableSchema } from "graphql-tools";
-import { merge } from "lodash";
-import { answerTypeDefs, answerResolver } from "./answer/answer.schema";
-import { commentTypeDefs, commentResolver } from "./comment/comment.schema";
-import { postTypeDefs, postResolver } from "./post/post.schema";
-import { userTypeDefs, userResolver } from "./user/user.schema";
-import { voteTypeDefs, voteResolver } from "./vote/vote.schema";
+import {makeExecutableSchema} from "graphql-tools";
+import {merge} from "lodash";
+import {answerTypeDefs, answerResolver} from "./answer/answer.schema";
+import {commentTypeDefs, commentResolver} from "./comment/comment.schema";
+import {postTypeDefs, postResolver} from "./post/post.schema";
+import {userTypeDefs, userResolver} from "./user/user.schema";
+import {voteTypeDefs, voteResolver} from "./vote/vote.schema";
 
 const rootTypeDefs = `
   type Query
@@ -16,21 +16,21 @@ const rootTypeDefs = `
 `;
 
 const schema = makeExecutableSchema({
-  typeDefs: [
-    rootTypeDefs,
-    userTypeDefs,
-    postTypeDefs,
-    answerTypeDefs,
-    commentTypeDefs,
-    voteTypeDefs
-  ],
-  resolvers: merge(
-    answerResolver,
-    commentResolver,
-    postResolver,
-    userResolver,
-    voteResolver
-  )
+    typeDefs: [
+        rootTypeDefs,
+        userTypeDefs,
+        postTypeDefs,
+        answerTypeDefs,
+        commentTypeDefs,
+        voteTypeDefs
+    ],
+    resolvers: merge(
+        answerResolver,
+        commentResolver,
+        postResolver,
+        userResolver,
+        voteResolver
+    )
 });
 
 export default schema;

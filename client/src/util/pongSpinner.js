@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled, { keyframes } from "styled-components";
+import styled, {keyframes} from "styled-components";
 
 const motionPlayer = props => keyframes`
     0% {
@@ -37,16 +37,16 @@ const motionBall = props => keyframes`
     }
 `;
 
-const PongSpinner = ({ size, color, loading, sizeUnit }) => {
-  return (
-    loading && (
-      <Wrapper size={size} sizeUnit={sizeUnit}>
-        <Player left={true} color={color} size={size} sizeUnit={sizeUnit} />
-        <Ball color={color} size={size} sizeUnit={sizeUnit} />
-        <Player right={true} color={color} size={size} sizeUnit={sizeUnit} />
-      </Wrapper>
-    )
-  );
+const PongSpinner = ({size, color, loading, sizeUnit}) => {
+    return (
+        loading && (
+            <Wrapper size={size} sizeUnit={sizeUnit}>
+                <Player left={true} color={color} size={size} sizeUnit={sizeUnit}/>
+                <Ball color={color} size={size} sizeUnit={sizeUnit}/>
+                <Player right={true} color={color} size={size} sizeUnit={sizeUnit}/>
+            </Wrapper>
+        )
+    );
 };
 
 const Wrapper = styled.div`
@@ -76,17 +76,17 @@ const Player = styled.div`
 `;
 
 PongSpinner.defaultProps = {
-  loading: true,
-  size: 60,
-  color: "#4b4c56",
-  sizeUnit: "px"
+    loading: true,
+    size: 60,
+    color: "#4b4c56",
+    sizeUnit: "px"
 };
 
 PongSpinner.propTypes = {
-  loading: PropTypes.bool,
-  size: PropTypes.number,
-  color: PropTypes.string,
-  sizeUnit: PropTypes.string
+    loading: PropTypes.bool,
+    size: PropTypes.number,
+    color: PropTypes.string,
+    sizeUnit: PropTypes.string
 };
 
 export default PongSpinner;

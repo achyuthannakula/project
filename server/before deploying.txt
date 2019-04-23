@@ -1,0 +1,11 @@
+monogdb = mongod --dpath data/
+{
+  "presets": [
+    "@babel/preset-env"
+  ],
+  "plugins": [
+    ["@babel/transform-runtime"]
+  ]
+}
+
+"@babel/runtime": "^7.4.3", as dependency
